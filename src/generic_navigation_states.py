@@ -12,16 +12,14 @@
 # \note
 #   Project name: care-o-bot
 # \note
-#   ROS stack name: cob_apps
+#   ROS stack name: cob_scenarios
 # \note
 #   ROS package name: cob_generic_states
 #
 # \author
-#   Author: Daniel Maeki
-# \author
-#   Supervised by: Florian Weisshardt, email:florian.weisshardt@ipa.fhg.de
+#   Florian Weisshardt, email:florian.weisshardt@ipa.fhg.de
 #
-# \date Date of creation: May 2011
+# \date Date of creation: Aug 2011
 #
 # \brief
 #   Implements generic states which can be used in multiple scenarios.
@@ -72,12 +70,10 @@ sss = simple_script_server()
 class approach_pose(smach.State):
 
 	def __init__(self, pose = "", mode = "omni", move_second = "False"):
-
 		smach.State.__init__(
 			self,
 			outcomes=['succeeded', 'failed'],
-			input_keys=['pose'],
-			output_keys=['pose'])
+			input_keys=['pose'])
 
 		self.pose = pose
 		self.mode = mode
@@ -149,8 +145,7 @@ class approach_pose_without_retry(smach.State):
 		smach.State.__init__(
 			self,
 			outcomes=['succeeded', 'failed'],
-			input_keys=['pose'],
-			output_keys=['pose'])
+			input_keys=['pose'])
 
 		self.pose = pose
 

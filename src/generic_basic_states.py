@@ -12,16 +12,14 @@
 # \note
 #   Project name: care-o-bot
 # \note
-#   ROS stack name: cob_apps
+#   ROS stack name: cob_scenarios
 # \note
 #   ROS package name: cob_generic_states
 #
 # \author
-#   Author: Daniel Maeki
-# \author
-#   Supervised by: Florian Weisshardt, email:florian.weisshardt@ipa.fhg.de
+#   Florian Weisshardt, email:florian.weisshardt@ipa.fhg.de
 #
-# \date Date of creation: May 2011
+# \date Date of creation: Aug 2011
 #
 # \brief
 #   Implements generic states which can be used in multiple scenarios.

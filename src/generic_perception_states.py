@@ -12,16 +12,14 @@
 # \note
 #   Project name: care-o-bot
 # \note
-#   ROS stack name: cob_apps
+#   ROS stack name: cob_scenarios
 # \note
 #   ROS package name: cob_generic_states
 #
 # \author
-#   Author: Daniel Maeki
-# \author
-#   Supervised by: Florian Weisshardt, email:florian.weisshardt@ipa.fhg.de
+#   Florian Weisshardt, email:florian.weisshardt@ipa.fhg.de
 #
-# \date Date of creation: May 2011
+# \date Date of creation: Aug 2011
 #
 # \brief
 #   Implements generic states which can be used in multiple scenarios.
@@ -70,10 +68,15 @@ from cob_object_detection.msg import *
 
 ## Detect state
 #
-# This state wil try to detect an object.
+# This state will try to detect an object.
 class detect_object(smach.State):
 	def __init__(self,max_retries=1):
-		smach.State.__init__(self, outcomes=['succeeded','retry','no_more_retries','failed'], input_keys=['object_name'], output_keys=['object_pose'])
+		smach.State.__init__(
+			self,
+			outcomes=['succeeded','retry','no_more_retries','failed'],
+			input_keys=['object_name'],
+			output_keys=['object_pose'])
+
 		self.object_list = DetectionArray()
 		self.max_retries = max_retries
 		self.retries = 0
@@ -111,7 +114,7 @@ class detect_object(smach.State):
 			rospy.wait_for_service('/object_detection/detect_object',10)
 		except rospy.ROSException, e:
 			print "Service not available: %s"%e
-			self.retries = 0# no object foint within min_dist start value
+			self.retries = 0 # no object found within min_dist start value
 			return 'failed'
 
 		# call object detection service
@@ -153,5 +156,5 @@ class detect_object(smach.State):
 
 		# copy object pose to userdata
 		userdata.object_pose = obj.pose
-		self.retries+=1
+		self.retries = 0
 		return 'succeeded'
