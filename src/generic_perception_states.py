@@ -70,16 +70,17 @@ from cob_object_detection.msg import *
 #
 # This state will try to detect an object.
 class detect_object(smach.State):
-	def __init__(self,max_retries=1):
+	def __init__(self,object_name = "",max_retries = 1):
 		smach.State.__init__(
 			self,
 			outcomes=['succeeded','retry','no_more_retries','failed'],
 			input_keys=['object_name'],
-			output_keys=['object_pose'])
+			output_keys=['object'])
 
 		self.object_list = DetectionArray()
 		self.max_retries = max_retries
 		self.retries = 0
+		self.object_name = object_name
 		
 		self.torso_poses = []
 		self.torso_poses.append("back_right_extreme")
@@ -87,6 +88,16 @@ class detect_object(smach.State):
 		self.torso_poses.append("back_left_extreme")
 
 	def execute(self, userdata):
+		# determine object name
+		if self.object_name != "":
+			object_name = self.object_name
+		elif type(userdata.object_name) is str:
+			object_name = userdata.object_name
+		else: # this should never happen
+			rospy.logerr("Invalid userdata 'object_name'")
+			self.retries = 0
+			return 'failed'
+	
 		# check if maximum retries reached
 		if self.retries > self.max_retries:
 			self.retries = 0
@@ -97,7 +108,7 @@ class detect_object(smach.State):
 		
 		# make the robot ready to inspect the scene
 		if self.retries == 0: # only move arm, sdh and head for the first try
-			sss.say(["I will now search for the " + userdata.object_name + "."],False)
+			sss.say(["I will now search for the " + object_name + "."],False)
 			handle_arm = sss.move("arm","folded-to-look_at_table",False)
 			handle_torso = sss.move("torso","shake",False)
 			handle_head = sss.move("head","back",False)
@@ -121,7 +132,7 @@ class detect_object(smach.State):
 		try:
 			detector_service = rospy.ServiceProxy('/object_detection/detect_object', DetectObjects)
 			req = DetectObjectsRequest()
-			req.object_name.data = userdata.object_name
+			req.object_name.data = object_name
 			res = detector_service(req)
 		except rospy.ServiceException, e:
 			print "Service call failed: %s"%e
@@ -133,16 +144,10 @@ class detect_object(smach.State):
 			rospy.logerr("No objects found")
 			self.retries+=1
 			return 'retry'
-			
-		#check if label of first item in object_list fits to requested object_name
-		if res.object_list.detections[0].label != userdata.object_name: # TODO check all objects in list
-			sss.say(["The object name doesn't fit."],False)
-			self.retries+=1
-			return 'retry'
 		
 		# select nearest object in x-y-plane in head_camera_left_link
 		min_dist = 2 # start value in m
-		obj = PoseStamped()
+		obj = Detection()
 		for item in res.object_list.detections:
 			dist = sqrt(item.pose.pose.position.x*item.pose.pose.position.x+item.pose.pose.position.y*item.pose.pose.position.y)
 			if dist < min_dist:
@@ -154,7 +159,13 @@ class detect_object(smach.State):
 			self.retries+=1
 			return 'retry'
 
-		# copy object pose to userdata
-		userdata.object_pose = obj.pose
+		#check if label of object fits to requested object_name
+		if obj.label != object_name:
+			sss.say(["The object name doesn't fit."],False)
+			self.retries+=1
+			return 'retry'
+
+		# we succeeded to detect an object
+		userdata.object = obj
 		self.retries = 0
 		return 'succeeded'
