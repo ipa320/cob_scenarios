@@ -67,22 +67,52 @@ sss = simple_script_server()
 import tf
 from kinematics_msgs.srv import *
 
+
+## Select grasp state
+#
+# This state select a grasping strategy. A high object will be grasped from the side, a low one from top.
+class select_grasp(smach.State):
+
+	def __init__(self):
+		smach.State.__init__(
+			self,
+			outcomes=['top', 'side', 'failed'],
+			input_keys=['object_pose'])
+		
+		self.height_switch = 0.8 # Switch to select top or side grasp using the height of the object over the ground in [m].
+
+	def execute(self, userdata):
+		try:
+			# transform object_pose into base_link
+			object_pose_in = userdata.object.pose
+			object_pose_in.header.stamp = self.listener.getLatestCommonTime("/base_link",object_pose_in.header.frame_id)
+			object_pose_bl = self.listener.transformPose("/base_link", object_pose_in)
+		except rospy.ROSException, e:
+			print "Transformation not possible: %s"%e
+			return 'failed'
+		
+		if object_pose_bl.pose.position.z >= self.height_switch: #TODO how to select grasps for objects within a cabinet or shelf?
+			return 'side'
+		else: 
+			return 'top'
+
+
 ## Grasp side state
 #
 # This state will grasp an object with a side grasp
 class grasp_side(smach.State):
 
-	def __init__(self):
+	def __init__(self, max_retries = 1):
 		smach.State.__init__(
 			self,
-			outcomes=['succeeded', 'no_ik', 'failed'],
+			outcomes=['succeeded', 'no_ik', 'no_more_retries', 'failed'],
 			input_keys=['object'])
 		
+		self.max_retries = max_retries
+		self.retries = 0
 		self.iks = rospy.ServiceProxy('/arm_controller/get_ik', GetPositionIK)
 		self.listener = tf.TransformListener()
 		self.stiffness = rospy.ServiceProxy('/arm_controller/set_joint_stiffness', SetJointStiffness)
-		self.upper_limit = 0.9
-		self.lower_limit = 0.5
 
 	def callIKSolver(self, current_pose, goal_pose):
 		req = GetPositionIKRequest()
@@ -96,11 +126,17 @@ class grasp_side(smach.State):
 		return (result, resp.error_code)
 
 	def execute(self, userdata):
+		# check if maximum retries reached
+		if self.retries > self.max_retries:
+			self.retries = 0
+			return 'no_more_retries'
+	
 		# make arm soft
 		try:
 			self.stiffness([300,300,300,300,300,300,300])
 		except rospy.ServiceException, e:
 			print "Service call failed: %s"%e
+			self.retries = 0
 			return 'failed'
 	
 		# transform object_pose into base_link
@@ -135,18 +171,21 @@ class grasp_side(smach.State):
 		(pre_grasp_conf, error_code) = self.callIKSolver(arm_pre_grasp[0], pre_grasp_bl)		
 		if(error_code.val != error_code.SUCCESS):
 			print "Ik pre_grasp Failed"
+			self.retries += 1
 			return 'no_ik'
 		
 		# calculate ik solutions for grasp configuration
 		(grasp_conf, error_code) = self.callIKSolver(pre_grasp_conf, object_pose_bl)
 		if(error_code.val != error_code.SUCCESS):
 			print "Ik grasp Failed"
+			self.retries += 1
 			return 'no_ik'
 		
 		# calculate ik solutions for pre grasp configuration
 		(post_grasp_conf, error_code) = self.callIKSolver(grasp_conf, post_grasp_bl)
 		if(error_code.val != error_code.SUCCESS):
 			print "Ik post_grasp Failed"
+			self.retries += 1
 			return 'no_ik'	
 
 		# execute grasp
@@ -179,17 +218,17 @@ class grasp_side(smach.State):
 # This state will grasp an object with a top grasp
 class grasp_top(smach.State):
 
-	def __init__(self):
+	def __init__(self, max_retries = 1):
 		smach.State.__init__(
 			self,
-			outcomes=['succeeded', 'no_ik', 'failed'],
+			outcomes=['succeeded', 'no_ik', 'no_more_retries', 'failed'],
 			input_keys=['object'])
 		
+		self.max_retries = max_retries
+		self.retries = 0
 		self.iks = rospy.ServiceProxy('/arm_controller/get_ik', GetPositionIK)
 		self.listener = tf.TransformListener()
 		self.stiffness = rospy.ServiceProxy('/arm_controller/set_joint_stiffness', SetJointStiffness)
-		self.upper_limit = 0.9
-		self.lower_limit = 0.5
 
 	def callIKSolver(self, current_pose, goal_pose):
 		req = GetPositionIKRequest()
@@ -203,11 +242,17 @@ class grasp_top(smach.State):
 		return (result, resp.error_code)
 
 	def execute(self, userdata):
+		# check if maximum retries reached
+		if self.retries > self.max_retries:
+			self.retries = 0
+			return 'no_more_retries'
+	
 		# make arm soft
 		try:
 			self.stiffness([300,300,300,300,300,300,300])
 		except rospy.ServiceException, e:
 			print "Service call failed: %s"%e
+			self.retries = 0
 			return 'failed'
 	
 		# transform object_pose into base_link
@@ -242,18 +287,21 @@ class grasp_top(smach.State):
 		(pre_grasp_conf, error_code) = self.callIKSolver(arm_pre_grasp[0], pre_grasp_bl)		
 		if(error_code.val != error_code.SUCCESS):
 			print "Ik pre_grasp Failed"
+			self.retries += 1
 			return 'no_ik'
 		
 		# calculate ik solutions for grasp configuration
 		(grasp_conf, error_code) = self.callIKSolver(pre_grasp_conf, object_pose_bl)
 		if(error_code.val != error_code.SUCCESS):
 			print "Ik grasp Failed"
+			self.retries += 1
 			return 'no_ik'
 		
 		# calculate ik solutions for pre grasp configuration
 		(post_grasp_conf, error_code) = self.callIKSolver(grasp_conf, post_grasp_bl)
 		if(error_code.val != error_code.SUCCESS):
 			print "Ik post_grasp Failed"
+			self.retries += 1
 			return 'no_ik'	
 
 		# execute grasp
@@ -278,4 +326,36 @@ class grasp_top(smach.State):
 		sss.sleep(2)
 		sss.move("sdh","home",False)
 		
+		return 'succeeded'
+
+
+## Open door state
+#
+# This state will open a door
+class open_door(smach.State):
+
+	def __init__(self):
+		smach.State.__init__(
+			self,
+			outcomes=['succeeded', 'failed'],
+			input_keys=['door_pose'])
+
+	def execute(self, userdata):
+		#TODO teach hinge and handle position relative to the door_pose (this means: detected ipa_logo)
+		return 'succeeded'
+
+
+
+## Put object on tray state
+#
+# This state puts a grasped object on the tray
+class put_object_on_tray(smach.State):
+
+	def __init__(self):
+		smach.State.__init__(
+			self,
+			outcomes=['succeeded', 'failed'])
+
+	def execute(self, userdata):
+		#TODO select position on tray depending on how many objects are on the tray already. This has to be counted by this state itself
 		return 'succeeded'

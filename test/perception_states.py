@@ -17,11 +17,10 @@ class TestStates(unittest.TestCase):
 	def test_detect(self):
 		# create a SMACH state machine
 		SM = smach.StateMachine(outcomes=['overall_succeeded','overall_failed'])
-		SM.userdata.object_name = "milk"
 
 		# open the container
 		with SM:
-			smach.StateMachine.add('DETECT_OBJECT', detect_object(),
+			smach.StateMachine.add('TEST', detect_object(),
 				transitions={'succeeded':'overall_succeeded', 'failed':'overall_failed'})
 
 		try:

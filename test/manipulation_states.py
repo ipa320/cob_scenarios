@@ -7,8 +7,6 @@ import smach
 import smach_ros
 import unittest
 
-from geometry_msgs import *
-
 from generic_manipulation_states import *
 
 class TestStates(unittest.TestCase):
@@ -16,14 +14,28 @@ class TestStates(unittest.TestCase):
 		super(TestStates, self).__init__(*args)
 		rospy.init_node('test_states')
 
-	def test_grasp_top(self):
+	def test_select_grasp(self):
 		# create a SMACH state machine
 		SM = smach.StateMachine(outcomes=['overall_succeeded','overall_failed'])
-		SM.userdata.object_pose = PoseStamped()
 
 		# open the container
 		with SM:
-			smach.StateMachine.add('GRASP_TOP', grasp_top(),
+			smach.StateMachine.add('TEST', select_grasp(),
+				transitions={'top':'overall_succeeded', 'side':'overall_succeeded'})
+
+		try:
+			SM.execute()
+		except:
+			error_message = "Unexpected error:", sys.exc_info()[0]
+			self.fail(error_message)
+
+	def test_grasp_top(self):
+		# create a SMACH state machine
+		SM = smach.StateMachine(outcomes=['overall_succeeded','overall_failed'])
+
+		# open the container
+		with SM:
+			smach.StateMachine.add('TEST', grasp_top(),
 				transitions={'succeeded':'overall_succeeded', 'failed':'overall_failed'})
 
 		try:
@@ -35,11 +47,10 @@ class TestStates(unittest.TestCase):
 	def test_grasp_side(self):
 		# create a SMACH state machine
 		SM = smach.StateMachine(outcomes=['overall_succeeded','overall_failed'])
-		SM.userdata.object_pose = PoseStamped()
 
 		# open the container
 		with SM:
-			smach.StateMachine.add('GRASP_SIDE', grasp_side(),
+			smach.StateMachine.add('TEST', grasp_side(),
 				transitions={'succeeded':'overall_succeeded', 'failed':'overall_failed'})
 
 		try:
@@ -48,6 +59,35 @@ class TestStates(unittest.TestCase):
 			error_message = "Unexpected error:", sys.exc_info()[0]
 			self.fail(error_message)
 
+	def test_open_door(self):
+		# create a SMACH state machine
+		SM = smach.StateMachine(outcomes=['overall_succeeded','overall_failed'])
+
+		# open the container
+		with SM:
+			smach.StateMachine.add('TEST', open_door(),
+				transitions={'succeeded':'overall_succeeded', 'failed':'overall_failed'})
+
+		try:
+			SM.execute()
+		except:
+			error_message = "Unexpected error:", sys.exc_info()[0]
+			self.fail(error_message)
+
+	def test_put_object_on_tray(self):
+		# create a SMACH state machine
+		SM = smach.StateMachine(outcomes=['overall_succeeded','overall_failed'])
+
+		# open the container
+		with SM:
+			smach.StateMachine.add('TEST', put_object_on_tray(),
+				transitions={'succeeded':'overall_succeeded', 'failed':'overall_failed'})
+
+		try:
+			SM.execute()
+		except:
+			error_message = "Unexpected error:", sys.exc_info()[0]
+			self.fail(error_message)
 
 # main
 if __name__ == '__main__':

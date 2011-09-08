@@ -19,7 +19,7 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 #uncomment if you have defined messages
 #rosbuild_genmsg()
 #uncomment if you have defined services
-#rosbuild_gensrv()
+rosbuild_gensrv()
 
 #common commands for building c++ executables and libraries
 #rosbuild_add_library(${PROJECT_NAME} src/example.cpp)
@@ -30,8 +30,4 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 #target_link_libraries(example ${PROJECT_NAME})
 
 # rostest
-#rosbuild_add_pyunit(test/basic_states.py TIMEOUT 30.0)
-#rosbuild_add_pyunit(test/navigation_states.py TIMEOUT 30.0)
-#rosbuild_add_pyunit(test/manipulation_states.py TIMEOUT 30.0)
-#rosbuild_add_pyunit(test/perception_states.py TIMEOUT 30.0)
 rosbuild_add_rostest(test/generic_states.test TIMEOUT 30.0)

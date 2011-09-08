@@ -13,4 +13,8 @@
 	<!-- test perception states -->
 	<test test-name="perception_states" pkg="cob_generic_states" type="perception_states.py" name="perception_states_test_node" time-limit="30" />
 
+	<!-- test state machines -->
+	<test test-name="state_machines" pkg="cob_generic_states" type="state_machines.py" name="state_machines_test_node" time-limit="30" />
+
+
 </launch>

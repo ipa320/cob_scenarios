@@ -14,14 +14,43 @@ class TestStates(unittest.TestCase):
 		super(TestStates, self).__init__(*args)
 		rospy.init_node('test_states')
 
-	def test_approach_pose(self):
+	def test_initialize(self):
 		# create a SMACH state machine
 		SM = smach.StateMachine(outcomes=['overall_succeeded','overall_failed'])
-		SM.userdata.pose = "home"
 
 		# open the container
 		with SM:
-			smach.StateMachine.add('INITIALIZE', initialize(),
+			smach.StateMachine.add('TEST', initialize(),
+				transitions={'succeeded':'overall_succeeded', 'failed':'overall_failed'})
+
+		try:
+			SM.execute()
+		except:
+			error_message = "Unexpected error:", sys.exc_info()[0]
+			self.fail(error_message)
+
+	def test_get_oder(self):
+		# create a SMACH state machine
+		SM = smach.StateMachine(outcomes=['overall_succeeded','overall_failed'])
+
+		# open the container
+		with SM:
+			smach.StateMachine.add('TEST', get_order(),
+				transitions={'succeeded':'overall_succeeded', 'failed':'overall_failed'})
+
+		try:
+			SM.execute()
+		except:
+			error_message = "Unexpected error:", sys.exc_info()[0]
+			self.fail(error_message)
+
+	def test_deliver_object(self):
+		# create a SMACH state machine
+		SM = smach.StateMachine(outcomes=['overall_succeeded','overall_failed'])
+
+		# open the container
+		with SM:
+			smach.StateMachine.add('TEST', deliver_object(),
 				transitions={'succeeded':'overall_succeeded', 'failed':'overall_failed'})
 
 		try:

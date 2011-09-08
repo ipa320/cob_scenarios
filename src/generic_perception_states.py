@@ -142,7 +142,7 @@ class detect_object(smach.State):
 		# check for no objects
 		if len(res.object_list.detections) <= 0:
 			rospy.logerr("No objects found")
-			self.retries+=1
+			self.retries += 1
 			return 'retry'
 		
 		# select nearest object in x-y-plane in head_camera_left_link
@@ -156,13 +156,13 @@ class detect_object(smach.State):
 		
 		# check if an object could be found within the min_dist start value
 		if obj.header.frame_id == "":
-			self.retries+=1
+			self.retries += 1
 			return 'retry'
 
 		#check if label of object fits to requested object_name
 		if obj.label != object_name:
 			sss.say(["The object name doesn't fit."],False)
-			self.retries+=1
+			self.retries += 1
 			return 'retry'
 
 		# we succeeded to detect an object

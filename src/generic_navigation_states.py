@@ -73,7 +73,7 @@ class approach_pose(smach.State):
 		smach.State.__init__(
 			self,
 			outcomes=['succeeded', 'failed'],
-			input_keys=['pose'])
+			input_keys=['base_pose'])
 
 		self.pose = pose
 		self.mode = mode
@@ -83,13 +83,13 @@ class approach_pose(smach.State):
 		# determine target position
 		if self.pose != "":
 			pose = self.pose
-		elif type(userdata.pose) is str:
-			pose = userdata.pose
-		elif type(userdata.pose) is list:
+		elif type(userdata.base_pose) is str:
+			pose = userdata.base_pose
+		elif type(userdata.base_pose) is list:
 			pose = []
-			pose.append(userdata.pose[0])
-			pose.append(userdata.pose[1])
-			pose.append(userdata.pose[2])
+			pose.append(userdata.base_pose[0])
+			pose.append(userdata.base_pose[1])
+			pose.append(userdata.base_pose[2])
 		else: # this should never happen
 			rospy.logerr("Invalid userdata 'pose'")
 			return 'failed'
@@ -145,7 +145,7 @@ class approach_pose_without_retry(smach.State):
 		smach.State.__init__(
 			self,
 			outcomes=['succeeded', 'failed'],
-			input_keys=['pose'])
+			input_keys=['base_pose'])
 
 		self.pose = pose
 
@@ -153,13 +153,13 @@ class approach_pose_without_retry(smach.State):
 		# determine target position
 		if self.pose != "":
 			pose = self.pose
-		elif type(userdata.pose) is str:
-			pose = userdata.pose
-		elif type(userdata.pose) is list:
+		elif type(userdata.base_pose) is str:
+			pose = userdata.base_pose
+		elif type(userdata.base_pose) is list:
 			pose = []
-			pose.append(userdata.pose[0])
-			pose.append(userdata.pose[1])
-			pose.append(userdata.pose[2])
+			pose.append(userdata.base_pose[0])
+			pose.append(userdata.base_pose[1])
+			pose.append(userdata.base_pose[2])
 		else: # this should never happen
 			rospy.logerr("Invalid userdata 'pose'")
 			return 'failed'
