@@ -105,7 +105,7 @@ class grasp_side(smach.State):
 	def __init__(self, max_retries = 1):
 		smach.State.__init__(
 			self,
-			outcomes=['succeeded', 'no_ik', 'no_more_retries', 'failed'],
+			outcomes=['succeeded', 'retry', 'no_more_retries', 'failed'],
 			input_keys=['object'])
 		
 		self.max_retries = max_retries
@@ -172,21 +172,21 @@ class grasp_side(smach.State):
 		if(error_code.val != error_code.SUCCESS):
 			print "Ik pre_grasp Failed"
 			self.retries += 1
-			return 'no_ik'
+			return 'retry'
 		
 		# calculate ik solutions for grasp configuration
 		(grasp_conf, error_code) = self.callIKSolver(pre_grasp_conf, object_pose_bl)
 		if(error_code.val != error_code.SUCCESS):
 			print "Ik grasp Failed"
 			self.retries += 1
-			return 'no_ik'
+			return 'retry'
 		
 		# calculate ik solutions for pre grasp configuration
 		(post_grasp_conf, error_code) = self.callIKSolver(grasp_conf, post_grasp_bl)
 		if(error_code.val != error_code.SUCCESS):
 			print "Ik post_grasp Failed"
 			self.retries += 1
-			return 'no_ik'	
+			return 'retry'	
 
 		# execute grasp
 		sss.say(["I am grasping the " + userdata.object.label + " now."],False)
@@ -221,7 +221,7 @@ class grasp_top(smach.State):
 	def __init__(self, max_retries = 1):
 		smach.State.__init__(
 			self,
-			outcomes=['succeeded', 'no_ik', 'no_more_retries', 'failed'],
+			outcomes=['succeeded', 'retry', 'no_more_retries', 'failed'],
 			input_keys=['object'])
 		
 		self.max_retries = max_retries
@@ -288,21 +288,21 @@ class grasp_top(smach.State):
 		if(error_code.val != error_code.SUCCESS):
 			print "Ik pre_grasp Failed"
 			self.retries += 1
-			return 'no_ik'
+			return 'retry'
 		
 		# calculate ik solutions for grasp configuration
 		(grasp_conf, error_code) = self.callIKSolver(pre_grasp_conf, object_pose_bl)
 		if(error_code.val != error_code.SUCCESS):
 			print "Ik grasp Failed"
 			self.retries += 1
-			return 'no_ik'
+			return 'retry'
 		
 		# calculate ik solutions for pre grasp configuration
 		(post_grasp_conf, error_code) = self.callIKSolver(grasp_conf, post_grasp_bl)
 		if(error_code.val != error_code.SUCCESS):
 			print "Ik post_grasp Failed"
 			self.retries += 1
-			return 'no_ik'	
+			return 'retry'	
 
 		# execute grasp
 		sss.say(["I am grasping the " + userdata.object.label + " now."],False)

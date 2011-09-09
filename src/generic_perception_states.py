@@ -65,6 +65,7 @@ from simple_script_server import *
 sss = simple_script_server()
 
 from cob_object_detection.msg import *
+from cob_object_detection.srv import *
 
 ## Detect state
 #

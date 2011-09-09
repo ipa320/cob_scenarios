@@ -35,7 +35,7 @@ class sm_pick_object(smach.StateMachine):
 				transitions={'top':'GRASP_TOP', 'side':'GRASP_SIDE', 'failed':'failed'})
 			
 			smach.StateMachine.add('GRASP_SIDE', grasp_side(),
-				transitions={'succeeded':'succeeded', 'no_ik':'object_not_picked', 'failed':'failed'})
+				transitions={'succeeded':'succeeded', 'retry':'DETECT_OBJECT', 'no_more_retries':'object_not_picked', 'failed':'failed'})
 				
 			smach.StateMachine.add('GRASP_TOP', grasp_top(),
-				transitions={'succeeded':'succeeded', 'no_ik':'object_not_picked', 'failed':'failed'})
+				transitions={'succeeded':'succeeded', 'retry':'DETECT_OBJECT', 'no_more_retries':'object_not_picked', 'failed':'failed'})

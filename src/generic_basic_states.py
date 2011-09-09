@@ -66,6 +66,8 @@ sss = simple_script_server()
 
 from cob_generic_states.srv import *
 
+from cob_tablet_gui.srv import *
+
 ## Initialize state
 #
 # This state will initialize all hardware drivers.
@@ -163,10 +165,11 @@ class wait_for_task(smach.State):
 	def execute(self, userdata):
 		self.task_active = False
 
-		while True:
-			print self.task_active
+		loop_rate = rospy.Rate(1) #hz
+		while not rospy.is_shutdown():
 			if not self.task_active:
-				sss.sleep(1) #TODO use loop_rate.sleep()
+				rospy.loginfo("Waiting for new task...")
+				loop_rate.sleep()
 			else:
 				self.task_active = True
 				return self.task
@@ -197,18 +200,18 @@ class get_order(smach.State):
 		
 		# call tablet_gui service
 		try:
-			gui_service = rospy.ServiceProxy(self.srv_name_tablet_gui, OrderDrink)
-			req = OrderDrinkRequest()
+			gui_service = rospy.ServiceProxy(self.srv_name_tablet_gui, GetOrder)
+			req = GetOrderRequest()
 			res = gui_service(req) # TODO: use action to be able to cancel the order e.g. after timeout
-			if len(res.drink.data) <= 0 or res.drink.data == "failed":
+			if len(res.object_name.data) <= 0 or res.object_name.data == "failed":
 				rospy.logerr("Order failed")
 				return 'no_order'
-			userdata.object_name = res.drink.data
+			userdata.object_name = res.object_name.data
 		except rospy.ServiceException, e:
 			print "Service call failed: %s"%e
 			return 'failed'
 		
-		sss.say(["You ordered " + userdata.object_name + "."],False)
+		sss.say(["You ordered " + res.object_name.data + "."],False)
 		sss.move("torso","nod",False)
 		sss.move("tray","down")
 		return 'succeeded'
