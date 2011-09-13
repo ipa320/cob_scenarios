@@ -61,6 +61,9 @@ import rospy
 import smach
 import smach_ros
 
+from math import *
+import copy
+
 from simple_script_server import *
 sss = simple_script_server()
 
@@ -82,6 +85,7 @@ class detect_object(smach.State):
 		self.max_retries = max_retries
 		self.retries = 0
 		self.object_name = object_name
+		self.srv_name_object_detection = '/object_detection/detect_object'
 		
 		self.torso_poses = []
 		self.torso_poses.append("back_right_extreme")
@@ -120,10 +124,13 @@ class detect_object(smach.State):
 		
 		# move sdh as feedback
 		sss.move("sdh","home",False)
+		
+		# wait for image to become stable
+		sss.sleep(2)
 	
 		# check if object detection service is available
 		try:
-			rospy.wait_for_service('/object_detection/detect_object',10)
+			rospy.wait_for_service(self.srv_name_object_detection,10)
 		except rospy.ROSException, e:
 			print "Service not available: %s"%e
 			self.retries = 0 # no object found within min_dist start value
@@ -131,7 +138,7 @@ class detect_object(smach.State):
 
 		# call object detection service
 		try:
-			detector_service = rospy.ServiceProxy('/object_detection/detect_object', DetectObjects)
+			detector_service = rospy.ServiceProxy(self.srv_name_object_detection, DetectObjects)
 			req = DetectObjectsRequest()
 			req.object_name.data = object_name
 			res = detector_service(req)
@@ -156,13 +163,14 @@ class detect_object(smach.State):
 				obj = copy.deepcopy(item)
 		
 		# check if an object could be found within the min_dist start value
-		if obj.header.frame_id == "":
+		if obj.label == "":
+			rospy.logerr("Object not within target range")
 			self.retries += 1
 			return 'retry'
 
 		#check if label of object fits to requested object_name
 		if obj.label != object_name:
-			sss.say(["The object name doesn't fit."],False)
+			rospy.logerr("The object name doesn't fit.")
 			self.retries += 1
 			return 'retry'
 

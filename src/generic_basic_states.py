@@ -67,6 +67,7 @@ sss = simple_script_server()
 from cob_generic_states.srv import *
 
 from cob_tablet_gui.srv import *
+from cob_tray_sensors.srv import *
 
 ## Initialize state
 #
@@ -187,8 +188,9 @@ class get_order(smach.State):
 		self.srv_name_tablet_gui = "/tablet_gui"
 
 	def execute(self, userdata):
-		sss.say(["What do you want to order? Please select on my screen."],False)
 		handle_tray = sss.move("tray","up",False)
+		sss.sleep(2)
+		sss.say(["What do you want to order? Please select on my screen."],False)
 		sss.move("torso","front",False)
 
 		# check for tablet_gui service
@@ -202,7 +204,9 @@ class get_order(smach.State):
 		try:
 			gui_service = rospy.ServiceProxy(self.srv_name_tablet_gui, GetOrder)
 			req = GetOrderRequest()
-			res = gui_service(req) # TODO: use action to be able to cancel the order e.g. after timeout
+			#res = gui_service(req) # TODO: use action to be able to cancel the order e.g. after timeout
+			res = GetOrderResponse() #FIXME this is for testing only
+			res.object_name.data = sss.wait_for_input() #FIXME this is for testing only
 			if len(res.object_name.data) <= 0 or res.object_name.data == "failed":
 				rospy.logerr("Order failed")
 				return 'no_order'
@@ -213,7 +217,7 @@ class get_order(smach.State):
 		
 		sss.say(["You ordered " + res.object_name.data + "."],False)
 		sss.move("torso","nod",False)
-		sss.move("tray","down")
+		sss.move("tray","down",False)
 		return 'succeeded'
 
 
@@ -223,8 +227,37 @@ class get_order(smach.State):
 class deliver_object(smach.State):
 	def __init__(self):
 		smach.State.__init__(self, 
-			outcomes=['succeeded', 'failed'])
+			outcomes=['succeeded', 'retry', 'failed'],
+			input_keys=['object_name'])
 
 	def execute(self, userdata):
-		#TODO implement deliver process
+		sss.say(["Here is your " + userdata.object_name + ". Please help yourself."],False)
+		sss.move("torso","nod",False)
+		
+		try:
+			rospy.wait_for_service('/tray/check_occupied',10)
+		except rospy.ROSException, e:
+			print "Service not available: %s"%e
+			return 'failed'
+
+		time = rospy.Time.now().secs
+		loop_rate = rospy.Rate(5) #hz
+		while True:
+			if rospy.Time.now().secs-time > 20:
+				return 'retry'
+			try:
+				tray_service = rospy.ServiceProxy('/tray/check_occupied', CheckOccupied)			
+				req = CheckOccupiedRequest()
+				res = tray_service(req)
+				print "waiting for tray to be not occupied any more"
+				if(res.occupied.data == False):
+					break
+			except rospy.ServiceException, e:
+				print "Service call failed: %s"%e
+				return 'failed'
+			loop_rate.sleep()
+		
+		sss.move("tray","down",False)
+		sss.move("torso","nod",False)
+		
 		return 'succeeded'

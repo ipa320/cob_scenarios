@@ -61,11 +61,16 @@ import rospy
 import smach
 import smach_ros
 
+import copy
+
 from simple_script_server import *
 sss = simple_script_server()
 
 import tf
 from kinematics_msgs.srv import *
+
+#this should be in manipulation_msgs
+from cob_mmcontroller.msg import *
 
 
 ## Select grasp state
@@ -77,9 +82,11 @@ class select_grasp(smach.State):
 		smach.State.__init__(
 			self,
 			outcomes=['top', 'side', 'failed'],
-			input_keys=['object_pose'])
+			input_keys=['object'])
 		
-		self.height_switch = 0.8 # Switch to select top or side grasp using the height of the object over the ground in [m].
+		self.height_switch = 0.90 # Switch to select top or side grasp using the height of the object over the ground in [m].
+		
+		self.listener = tf.TransformListener()
 
 	def execute(self, userdata):
 		try:
@@ -131,9 +138,9 @@ class grasp_side(smach.State):
 			self.retries = 0
 			return 'no_more_retries'
 	
-		# make arm soft
+		# make arm soft TODO: handle stiffness for schunk arm
 		try:
-			self.stiffness([300,300,300,300,300,300,300])
+			self.stiffness([100,100,100,100,100,100,100])
 		except rospy.ServiceException, e:
 			print "Service call failed: %s"%e
 			self.retries = 0
@@ -150,10 +157,10 @@ class grasp_side(smach.State):
 		object_pose_bl.pose.orientation.z = new_z
 		object_pose_bl.pose.orientation.w = new_w
 
-		# HACK: this is calibration between camera and hand
+		# FIXME: this is calibration between camera and hand and should be removed from scripting level
 		object_pose_bl.pose.position.x = object_pose_bl.pose.position.x - 0.08
 		#object_pose_bl.pose.position.y = object_pose_bl.pose.position.y - 0.05
-		object_pose_bl.pose.position.z = object_pose_bl.pose.position.z + 0.03
+		object_pose_bl.pose.position.z = object_pose_bl.pose.position.z - 0.1
 		
 		# calculate pre and post grasp positions
 		pre_grasp_bl = PoseStamped()
@@ -170,21 +177,21 @@ class grasp_side(smach.State):
 		arm_pre_grasp = rospy.get_param("/script_server/arm/pregrasp_top")
 		(pre_grasp_conf, error_code) = self.callIKSolver(arm_pre_grasp[0], pre_grasp_bl)		
 		if(error_code.val != error_code.SUCCESS):
-			print "Ik pre_grasp Failed"
+			rospy.logerr("Ik pre_grasp Failed")
 			self.retries += 1
 			return 'retry'
 		
 		# calculate ik solutions for grasp configuration
 		(grasp_conf, error_code) = self.callIKSolver(pre_grasp_conf, object_pose_bl)
 		if(error_code.val != error_code.SUCCESS):
-			print "Ik grasp Failed"
+			rospy.logerr("Ik grasp Failed")
 			self.retries += 1
 			return 'retry'
 		
 		# calculate ik solutions for pre grasp configuration
 		(post_grasp_conf, error_code) = self.callIKSolver(grasp_conf, post_grasp_bl)
 		if(error_code.val != error_code.SUCCESS):
-			print "Ik post_grasp Failed"
+			rospy.logerr("Ik post_grasp Failed")
 			self.retries += 1
 			return 'retry'	
 
@@ -196,20 +203,11 @@ class grasp_side(smach.State):
 		handle_arm.wait()
 		sss.move("sdh", "cylclosed")
 	
-		# move object to frontside and put object on tray
+		# move object to hold position
 		sss.move("head","front",False)
-		handle_arm = sss.move("arm", [post_grasp_conf, "intermediateback","intermediatefront","intermediatefront", "overtray"],False)
-		sss.sleep(1)
-		handle_tray = sss.move("tray","up",False)
-		handle_arm.wait()
-		handle_tray.wait()
-		sss.move("sdh","cylopen")
+		sss.move("arm", [post_grasp_conf, "hold"])
 		
-		# move arm back to folded
-		handle_arm = sss.move("arm","tray-to-folded",False)
-		sss.sleep(2)
-		sss.move("sdh","home",False)
-		
+		self.retries = 0
 		return 'succeeded'
 
 
@@ -247,9 +245,9 @@ class grasp_top(smach.State):
 			self.retries = 0
 			return 'no_more_retries'
 	
-		# make arm soft
+		# make arm soft TODO: handle stiffness for schunk arm
 		try:
-			self.stiffness([300,300,300,300,300,300,300])
+			self.stiffness([100,100,100,100,100,100,100])
 		except rospy.ServiceException, e:
 			print "Service call failed: %s"%e
 			self.retries = 0
@@ -267,7 +265,7 @@ class grasp_top(smach.State):
 		object_pose_bl.pose.orientation.z = new_z
 		object_pose_bl.pose.orientation.w = new_w
 
-		# HACK: this is calibration between camera and hand
+		# FIXME: this is calibration between camera and hand and should be removed from scripting level
 		object_pose_bl.pose.position.x = object_pose_bl.pose.position.x - 0.08
 		object_pose_bl.pose.position.y = object_pose_bl.pose.position.y# + 0.02
 		object_pose_bl.pose.position.z = object_pose_bl.pose.position.z + 0.07
@@ -286,21 +284,21 @@ class grasp_top(smach.State):
 		arm_pre_grasp = rospy.get_param("/script_server/arm/pregrasp_top")
 		(pre_grasp_conf, error_code) = self.callIKSolver(arm_pre_grasp[0], pre_grasp_bl)		
 		if(error_code.val != error_code.SUCCESS):
-			print "Ik pre_grasp Failed"
+			rospy.logerr("Ik pre_grasp Failed")
 			self.retries += 1
 			return 'retry'
 		
 		# calculate ik solutions for grasp configuration
 		(grasp_conf, error_code) = self.callIKSolver(pre_grasp_conf, object_pose_bl)
 		if(error_code.val != error_code.SUCCESS):
-			print "Ik grasp Failed"
+			rospy.logerr("Ik grasp Failed")
 			self.retries += 1
 			return 'retry'
 		
 		# calculate ik solutions for pre grasp configuration
 		(post_grasp_conf, error_code) = self.callIKSolver(grasp_conf, post_grasp_bl)
 		if(error_code.val != error_code.SUCCESS):
-			print "Ik post_grasp Failed"
+			rospy.logerr("Ik post_grasp Failed")
 			self.retries += 1
 			return 'retry'	
 
@@ -314,18 +312,9 @@ class grasp_top(smach.State):
 	
 		# move object to frontside and put object on tray
 		sss.move("head","front",False)
-		handle_arm = sss.move("arm", [post_grasp_conf, "intermediateback","intermediatefront","intermediatefront_top", "overtray_top"],False)
-		sss.sleep(1)
-		handle_tray = sss.move("tray","up",False)
-		handle_arm.wait()
-		handle_tray.wait()
-		sss.move("sdh","spheropen")
+		sss.move("arm", [post_grasp_conf, "hold"])
 		
-		# move arm back to folded
-		handle_arm = sss.move("arm","tray_top-to-folded",False)
-		sss.sleep(2)
-		sss.move("sdh","home",False)
-		
+		self.retries = 0
 		return 'succeeded'
 
 
@@ -334,22 +323,123 @@ class grasp_top(smach.State):
 # This state will open a door
 class open_door(smach.State):
 
-	def __init__(self):
+	def __init__(self, max_retries = 1):
 		smach.State.__init__(
 			self,
-			outcomes=['succeeded', 'failed'],
-			input_keys=['door_pose'])
+			outcomes=['succeeded', 'retry', 'no_more_retries', 'failed'],
+			input_keys=['object'])
+
+		self.max_retries = max_retries
+		self.retries = 0
+		self.iks = rospy.ServiceProxy('/arm_controller/get_ik', GetPositionIK)
+		self.listener = tf.TransformListener()
+		self.mmstart = rospy.ServiceProxy('/mm/start', Trigger)
+		self.mmstop = rospy.ServiceProxy('/mm/stop', Trigger)
+		self.cartClient = actionlib.SimpleActionClient('/moveCirc', OpenFridgeAction)
+
+	def callIKSolver(self, current_pose, goal_pose):
+		req = GetPositionIKRequest()
+		req.ik_request.ik_link_name = "sdh_grasp_link"
+		req.ik_request.ik_seed_state.joint_state.position = current_pose
+		req.ik_request.pose_stamped = goal_pose
+		#print req.ik_request
+		resp = self.iks(req)
+		result = []
+		for o in resp.solution.joint_state.position:
+			result.append(o)
+		return (result, resp.error_code)
 
 	def execute(self, userdata):
 		#TODO teach hinge and handle position relative to the door_pose (this means: detected ipa_logo)
+		
+		# check if maximum retries reached
+		if self.retries > self.max_retries:
+			self.retries = 0
+			return 'no_more_retries'
+		
+		print userdata.object
+
+		print "starting fridge open state"
+		
+		arm_pre_grasp = rospy.get_param("/script_server/arm/pregrasp_top")
+
+		# door handle pose
+		door_handle_pose_bl = PoseStamped()
+		door_handle_pose_bl.header.stamp = rospy.Time.now()
+		door_handle_pose_bl.header.frame_id = "/base_link"
+		door_handle_pose_bl.pose.position.x = -0.7
+		door_handle_pose_bl.pose.position.y = 0.1
+		door_handle_pose_bl.pose.position.z = 0.9
+		door_handle_pose_bl.pose.orientation.x = -0.495
+		door_handle_pose_bl.pose.orientation.y = -0.532
+		door_handle_pose_bl.pose.orientation.z = 0.452
+		door_handle_pose_bl.pose.orientation.w = 0.517
+
+		# door hinge pose
+		door_hinge_pose_bl = PoseStamped()
+		door_hinge_pose_bl.header.stamp = rospy.Time.now()
+		door_hinge_pose_bl.header.frame_id = "/base_link"
+		door_hinge_pose_bl.pose.position.x = -0.7
+		door_hinge_pose_bl.pose.position.y = -0.4
+		door_hinge_pose_bl.pose.position.z = 0.9
+
+		quat = quaternion_from_euler(-3.14, 0, 0)
+		door_hinge_pose_bl.pose.orientation.x = quat[0]
+		door_hinge_pose_bl.pose.orientation.y = quat[1]
+		door_hinge_pose_bl.pose.orientation.z = quat[2]
+		door_hinge_pose_bl.pose.orientation.w = quat[3]
+
+		(grasp_conf, error_code) = self.callIKSolver(arm_pre_grasp[0], door_handle_pose_bl)
+		if(error_code.val != error_code.SUCCESS):
+			rospy.logerr("Ik grasp_conf Failed")
+			self.retries += 1
+			return 'retry'
+		
+		# move arm to handle
+		handle_sdh = sss.move("sdh","cylopen",False)
+		sss.move("arm", [grasp_conf])
+		handle_sdh.wait()
+		sss.move("sdh","cylclosed")
+
+		# activate mm controller
+		try:
+			print "Starting MM controller"
+			self.mmstart()
+		except rospy.ServiceException, e:
+			print "Service call failed: %s"%e
+			self.retries = 0
+			return 'failed'
+
+		# wait for action server to become ready
+		if not self.cartClient.wait_for_server(rospy.Duration(5)):
+			# error: server did not respond
+			rospy.logerr("moveCirc action server not ready within timeout, aborting...")
+			self.retries = 0
+			return 'failed'
+
+		#syncmm movement to open fridge
+		goal = OpenFridgeGoal()
+		goal.hinge = door_hinge_pose_bl
+		self.cartClient.send_goal(goal)
+		self.cartClient.wait_for_result(rospy.Duration.from_sec(20.0))
+
+		# deactivate mm controller
+		try:
+			print "Stop MM controller"
+			self.mmstop()
+		except rospy.ServiceException, e:
+			print "Service call failed: %s"%e
+			self.retries = 0
+			return 'failed'
+
+		self.retries = 0
 		return 'succeeded'
 
 
-
-## Put object on tray state
+## Put object on tray side state
 #
-# This state puts a grasped object on the tray
-class put_object_on_tray(smach.State):
+# This state puts a side grasped object on the tray
+class put_object_on_tray_side(smach.State):
 
 	def __init__(self):
 		smach.State.__init__(
@@ -357,5 +447,50 @@ class put_object_on_tray(smach.State):
 			outcomes=['succeeded', 'failed'])
 
 	def execute(self, userdata):
-		#TODO select position on tray depending on how many objects are on the tray already. This has to be counted by this state itself
+		#TODO select position on tray depending on how many objects are on the tray already
+		
+		# move object to frontside
+		handle_arm = sss.move("arm","grasp-to-tray",False)
+		sss.sleep(2)
+		sss.move("tray","up")
+		handle_arm.wait()
+		
+		# release object
+		sss.move("sdh","cylopen")
+		
+		# move arm to backside again
+		handle_arm = sss.move("arm","tray-to-folded",False)
+		sss.sleep(3)
+		sss.move("sdh","home")
+		handle_arm.wait()
+		return 'succeeded'
+
+
+## Put object on tray top state
+#
+# This state puts a top grasped object on the tray
+class put_object_on_tray_top(smach.State):
+
+	def __init__(self):
+		smach.State.__init__(
+			self,
+			outcomes=['succeeded', 'failed'])
+
+	def execute(self, userdata):
+		#TODO select position on tray depending on how many objects are on the tray already
+		
+		# move object to frontside
+		handle_arm = sss.move("arm","grasp-to-tray_top",False)
+		sss.sleep(2)
+		sss.move("tray","up")
+		handle_arm.wait()
+		
+		# release object
+		sss.move("sdh","spheropen")
+		
+		# move arm to backside again
+		handle_arm = sss.move("arm","tray_top-to-folded",False)
+		sss.sleep(3)
+		sss.move("sdh","home",False)
+		handle_arm.wait()
 		return 'succeeded'

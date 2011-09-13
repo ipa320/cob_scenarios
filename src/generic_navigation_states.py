@@ -95,14 +95,14 @@ class approach_pose(smach.State):
 			return 'failed'
 
 		# try reaching pose
-		handle_base = sss.move("base", pose, False)
+		handle_base = sss.move("base", pose, mode=self.mode, blocking=False)
 		move_second = self.move_second
 
 		timeout = 0
 		while True:
 			if (handle_base.get_state() == 3) and (not move_second):
 				# do a second movement to place the robot more exactly
-				handle_base = sss.move("base", pose, False)
+				handle_base = sss.move("base", pose, mode=self.mode, blocking=False)
 				move_second = True
 			elif (handle_base.get_state() == 3) and (move_second):
 				return 'succeeded'			
@@ -165,14 +165,14 @@ class approach_pose_without_retry(smach.State):
 			return 'failed'
 
 		# try reaching pose
-		handle_base = sss.move("base", pose, False)
+		handle_base = sss.move("base", pose, mode=self.mode, blocking=False)
 		move_second = False
 
 		timeout = 0
 		while True:
 			if (handle_base.get_state() == 3) and (not move_second):
 				# do a second movement to place the robot more exactly
-				handle_base = sss.move("base", pose, False)
+				handle_base = sss.move("base", pose, mode=self.mode, blocking=False)
 				move_second = True
 			elif (handle_base.get_state() == 3) and (move_second):
 				return 'succeeded'		
