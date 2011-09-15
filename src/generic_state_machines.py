@@ -16,7 +16,7 @@ class sm_open_door(smach.StateMachine):
 			outcomes=['succeeded', 'door_not_opened', 'failed'])
 		
 		with self:
-			smach.StateMachine.add('DETECT_DOOR', detect_object("ipa_logo", max_retries = 3),
+			smach.StateMachine.add('DETECT_DOOR', detect_object("door", max_retries = 10),
 				transitions={'succeeded':'OPEN_DOOR', 
 							'retry':'DETECT_DOOR', 
 							'no_more_retries':'door_not_opened', 

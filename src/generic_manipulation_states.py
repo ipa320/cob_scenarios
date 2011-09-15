@@ -84,7 +84,7 @@ class select_grasp(smach.State):
 			outcomes=['top', 'side', 'failed'],
 			input_keys=['object'])
 		
-		self.height_switch = 0.90 # Switch to select top or side grasp using the height of the object over the ground in [m].
+		self.height_switch = 0.85 # Switch to select top or side grasp using the height of the object over the ground in [m].
 		
 		self.listener = tf.TransformListener()
 
@@ -168,13 +168,13 @@ class grasp_side(smach.State):
 		pre_grasp_bl = copy.deepcopy(object_pose_bl)
 		post_grasp_bl = copy.deepcopy(object_pose_bl)
 
-		pre_grasp_bl.pose.position.x = pre_grasp_bl.pose.position.x + 0.05 # x offset for pre grasp position
-		pre_grasp_bl.pose.position.y = pre_grasp_bl.pose.position.y + 0.05 # y offset for pre grasp position
+		pre_grasp_bl.pose.position.x = pre_grasp_bl.pose.position.x + 0.10 # x offset for pre grasp position
+		pre_grasp_bl.pose.position.y = pre_grasp_bl.pose.position.y + 0.10 # y offset for pre grasp position
 		post_grasp_bl.pose.position.x = post_grasp_bl.pose.position.x + 0.05 # x offset for post grasp position
 		post_grasp_bl.pose.position.z = post_grasp_bl.pose.position.z + 0.15 # z offset for post grasp position
 		
 		# calculate ik solutions for pre grasp configuration
-		arm_pre_grasp = rospy.get_param("/script_server/arm/pregrasp_top")
+		arm_pre_grasp = rospy.get_param("/script_server/arm/pregrasp")
 		(pre_grasp_conf, error_code) = self.callIKSolver(arm_pre_grasp[0], pre_grasp_bl)		
 		if(error_code.val != error_code.SUCCESS):
 			rospy.logerr("Ik pre_grasp Failed")
@@ -336,6 +336,7 @@ class open_door(smach.State):
 		self.mmstart = rospy.ServiceProxy('/mm/start', Trigger)
 		self.mmstop = rospy.ServiceProxy('/mm/stop', Trigger)
 		self.cartClient = actionlib.SimpleActionClient('/moveCirc', OpenFridgeAction)
+		self.stiffness = rospy.ServiceProxy('/arm_controller/set_joint_stiffness', SetJointStiffness)
 
 	def callIKSolver(self, current_pose, goal_pose):
 		req = GetPositionIKRequest()
@@ -356,48 +357,75 @@ class open_door(smach.State):
 		if self.retries > self.max_retries:
 			self.retries = 0
 			return 'no_more_retries'
-		
-		print userdata.object
 
-		print "starting fridge open state"
+		# make arm soft TODO: handle stiffness for schunk arm
+		try:
+			self.stiffness([100,100,100,100,100,100,100])
+		except rospy.ServiceException, e:
+			print "Service call failed: %s"%e
+			self.retries = 0
+			return 'failed'
+
+		try:
+			# transform object_pose into base_link
+			object_pose_in = userdata.object.pose
+			object_pose_in.header.stamp = self.listener.getLatestCommonTime("/base_link",object_pose_in.header.frame_id)
+			object_pose_bl = self.listener.transformPose("/base_link", object_pose_in)
+		except rospy.ROSException, e:
+			print "Transformation not possible: %s"%e
+			return 'failed'
 		
-		arm_pre_grasp = rospy.get_param("/script_server/arm/pregrasp_top")
+		arm_pre_grasp = rospy.get_param("/script_server/arm/pregrasp")
 
 		# door handle pose
 		door_handle_pose_bl = PoseStamped()
 		door_handle_pose_bl.header.stamp = rospy.Time.now()
 		door_handle_pose_bl.header.frame_id = "/base_link"
-		door_handle_pose_bl.pose.position.x = -0.7
-		door_handle_pose_bl.pose.position.y = 0.1
-		door_handle_pose_bl.pose.position.z = 0.9
+		door_handle_pose_bl.pose.position.x = object_pose_bl.pose.position.x+0.05
+		door_handle_pose_bl.pose.position.y = object_pose_bl.pose.position.y+0.15
+		door_handle_pose_bl.pose.position.z = object_pose_bl.pose.position.z-0.08
 		door_handle_pose_bl.pose.orientation.x = -0.495
 		door_handle_pose_bl.pose.orientation.y = -0.532
 		door_handle_pose_bl.pose.orientation.z = 0.452
 		door_handle_pose_bl.pose.orientation.w = 0.517
 
 		# door hinge pose
-		door_hinge_pose_bl = PoseStamped()
-		door_hinge_pose_bl.header.stamp = rospy.Time.now()
-		door_hinge_pose_bl.header.frame_id = "/base_link"
-		door_hinge_pose_bl.pose.position.x = -0.7
-		door_hinge_pose_bl.pose.position.y = -0.4
-		door_hinge_pose_bl.pose.position.z = 0.9
+		#door_hinge_pose_bl = PoseStamped()
+		#door_hinge_pose_bl.header.stamp = rospy.Time.now()
+		#door_hinge_pose_bl.header.frame_id = "/base_link"
+		#door_hinge_pose_bl.pose.position.x = -0.7
+		#door_hinge_pose_bl.pose.position.y = -0.4
+		#door_hinge_pose_bl.pose.position.z = 0.9
 
-		quat = quaternion_from_euler(-3.14, 0, 0)
-		door_hinge_pose_bl.pose.orientation.x = quat[0]
-		door_hinge_pose_bl.pose.orientation.y = quat[1]
-		door_hinge_pose_bl.pose.orientation.z = quat[2]
-		door_hinge_pose_bl.pose.orientation.w = quat[3]
+		#quat = quaternion_from_euler(-3.14, 0, 0)
+		#door_hinge_pose_bl.pose.orientation.x = quat[0]
+		#door_hinge_pose_bl.pose.orientation.y = quat[1]
+		#door_hinge_pose_bl.pose.orientation.z = quat[2]
+		#door_hinge_pose_bl.pose.orientation.w = quat[3]
 
-		(grasp_conf, error_code) = self.callIKSolver(arm_pre_grasp[0], door_handle_pose_bl)
+		# pre door handle position
+		pre_door_handle_pose_bl = copy.deepcopy(door_handle_pose_bl)
+		pre_door_handle_pose_bl.pose.position.x = pre_door_handle_pose_bl.pose.position.x + 0.05 # x offset for pre door position
+
+		# calculate ik solutions for pre door configuration
+		(pre_door_conf, error_code) = self.callIKSolver(arm_pre_grasp[0], pre_door_handle_pose_bl)		
 		if(error_code.val != error_code.SUCCESS):
-			rospy.logerr("Ik grasp_conf Failed")
+			rospy.logerr("Ik pre_door_conf Failed")
+			self.retries += 1
+			return 'retry'
+
+		# calculate ik solutions for door configuration
+		(door_conf, error_code) = self.callIKSolver(arm_pre_grasp[0], door_handle_pose_bl)
+		if(error_code.val != error_code.SUCCESS):
+			rospy.logerr("Ik door_conf Failed")
 			self.retries += 1
 			return 'retry'
 		
 		# move arm to handle
+		sss.move("tray","up",False)
 		handle_sdh = sss.move("sdh","cylopen",False)
-		sss.move("arm", [grasp_conf])
+		sss.move("torso","front")
+		sss.move("arm", [pre_door_conf,door_conf])
 		handle_sdh.wait()
 		sss.move("sdh","cylclosed")
 
@@ -419,7 +447,7 @@ class open_door(smach.State):
 
 		#syncmm movement to open fridge
 		goal = OpenFridgeGoal()
-		goal.hinge = door_hinge_pose_bl
+		#goal.hinge = door_hinge_pose_bl
 		self.cartClient.send_goal(goal)
 		self.cartClient.wait_for_result(rospy.Duration.from_sec(20.0))
 
@@ -433,6 +461,13 @@ class open_door(smach.State):
 			return 'failed'
 
 		self.retries = 0
+		
+		sss.move("sdh","cylopen")
+		sss.move("arm","door_release")
+		handle_arm = sss.move("arm","hold",False)
+		sss.sleep(2)
+		sss.move("sdh","cylclosed")
+		handle_arm.wait()
 		return 'succeeded'
 
 

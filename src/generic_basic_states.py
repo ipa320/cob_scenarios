@@ -189,6 +189,7 @@ class get_order(smach.State):
 
 	def execute(self, userdata):
 		handle_tray = sss.move("tray","up",False)
+		sss.move("head","front",False)
 		sss.sleep(2)
 		sss.say(["What do you want to order? Please select on my screen."],False)
 		sss.move("torso","front",False)
