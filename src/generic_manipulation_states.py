@@ -140,7 +140,7 @@ class grasp_side(smach.State):
 	
 		# make arm soft TODO: handle stiffness for schunk arm
 		try:
-			self.stiffness([100,100,100,100,100,100,100])
+			self.stiffness([300,300,300,100,100,100,100])
 		except rospy.ServiceException, e:
 			print "Service call failed: %s"%e
 			self.retries = 0
@@ -158,7 +158,7 @@ class grasp_side(smach.State):
 		object_pose_bl.pose.orientation.w = new_w
 
 		# FIXME: this is calibration between camera and hand and should be removed from scripting level
-		object_pose_bl.pose.position.x = object_pose_bl.pose.position.x - 0.08
+		object_pose_bl.pose.position.x = object_pose_bl.pose.position.x - 0.06 #- 0.08
 		#object_pose_bl.pose.position.y = object_pose_bl.pose.position.y - 0.05
 		object_pose_bl.pose.position.z = object_pose_bl.pose.position.z - 0.1
 		
@@ -266,7 +266,7 @@ class grasp_top(smach.State):
 		object_pose_bl.pose.orientation.w = new_w
 
 		# FIXME: this is calibration between camera and hand and should be removed from scripting level
-		object_pose_bl.pose.position.x = object_pose_bl.pose.position.x - 0.08
+		object_pose_bl.pose.position.x = object_pose_bl.pose.position.x -0.04 #- 0.08
 		object_pose_bl.pose.position.y = object_pose_bl.pose.position.y# + 0.02
 		object_pose_bl.pose.position.z = object_pose_bl.pose.position.z + 0.07
 
@@ -381,9 +381,9 @@ class open_door(smach.State):
 		door_handle_pose_bl = PoseStamped()
 		door_handle_pose_bl.header.stamp = rospy.Time.now()
 		door_handle_pose_bl.header.frame_id = "/base_link"
-		door_handle_pose_bl.pose.position.x = object_pose_bl.pose.position.x+0.05
+		door_handle_pose_bl.pose.position.x = object_pose_bl.pose.position.x+0.06 #+0.05
 		door_handle_pose_bl.pose.position.y = object_pose_bl.pose.position.y+0.15
-		door_handle_pose_bl.pose.position.z = object_pose_bl.pose.position.z-0.08
+		door_handle_pose_bl.pose.position.z = object_pose_bl.pose.position.z-0.04 #-0.08
 		door_handle_pose_bl.pose.orientation.x = -0.495
 		door_handle_pose_bl.pose.orientation.y = -0.532
 		door_handle_pose_bl.pose.orientation.z = 0.452
@@ -462,7 +462,7 @@ class open_door(smach.State):
 
 		self.retries = 0
 		
-		sss.move("sdh","cylopen")
+		sss.move("sdh","cyltotalopen")
 		sss.move("arm","door_release")
 		handle_arm = sss.move("arm","hold",False)
 		sss.sleep(2)

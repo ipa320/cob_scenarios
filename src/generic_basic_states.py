@@ -205,9 +205,7 @@ class get_order(smach.State):
 		try:
 			gui_service = rospy.ServiceProxy(self.srv_name_tablet_gui, GetOrder)
 			req = GetOrderRequest()
-			#res = gui_service(req) # TODO: use action to be able to cancel the order e.g. after timeout
-			res = GetOrderResponse() #FIXME this is for testing only
-			res.object_name.data = sss.wait_for_input() #FIXME this is for testing only
+			res = gui_service(req) # TODO: use action to be able to cancel the order e.g. after timeout
 			if len(res.object_name.data) <= 0 or res.object_name.data == "failed":
 				rospy.logerr("Order failed")
 				return 'no_order'
