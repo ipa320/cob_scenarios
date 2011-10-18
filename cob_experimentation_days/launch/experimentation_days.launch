@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<launch>
+
+	<!-- start bringup-->
+	<include file="$(find cob_bringup)/ros/launch/sim.launch"/>
+
+	<!-- start navigation -->
+	<include file="$(find cob_2dnav)/ros/launch/2dnav_dwa.launch"/>
+
+	<!-- upload default parameters -->
+	<include ns="script_server" file="$(find cob_default_config)/robots/$(env ROBOT)/upload_param.launch"/>
+	<include ns="script_server" file="$(find cob_default_config)/envs/upload_env_param.launch"/>
+	
+	<!-- upload cob_experimentation_days parameters -->
+	<include file="$(find cob_experimentation_days)/config/upload_param.launch"/>
+	
+	<param name="/sound_controller/mode" value="cepstral"/>
+	
+</launch>

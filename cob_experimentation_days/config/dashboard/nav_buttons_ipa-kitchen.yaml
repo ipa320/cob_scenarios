@@ -1,0 +1,6 @@
+buttons: [[home,move,home],
+  [order,move,order],
+  [idle,move,idle],
+  [pretable,move,pre_table],
+  [preshelf,move,pre_shelf],
+  [cupboard door,move,cupboard_door]]

@@ -1,0 +1,20 @@
+<package>
+  <description brief="cob_experimentation_days">
+
+     cob_experimentation_days
+
+  </description>
+  <author>fmw</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/cob_experimentation_days</url>
+  <depend package="cob_generic_states"/>
+  <depend package="rospy"/>
+  <depend package="smach"/>
+  <depend package="cob_script_server"/>
+  <depend package="cob_dashboard"/>
+  <depend package="cob_bringup"/>
+
+</package>
+
+

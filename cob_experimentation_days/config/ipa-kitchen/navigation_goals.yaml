@@ -1,0 +1,12 @@
+# table
+pre_table: [0.5, -0.5,-1.5708]
+table: [0.5, 0.0,-1.5708]
+
+# shelf
+pre_shelf: [-1.294, -0.8, 1.576]
+shelf: [-1.294, -1.3, 1.576]
+
+# cabinet
+cabinet_door: [1.6, -0.930, 3.14]
+cabinet_post_door: [1.0, -0.930, 3.14]
+cabinet: [1.6, -0.930, 3.14]
