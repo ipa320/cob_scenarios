@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<launch>
+
+	<!-- test basic states -->
+	<test test-name="basic_states" pkg="cob_generic_states" type="basic_states.py" name="basic_states_test_node" time-limit="30" />
+
+	<!-- test navigation states -->
+	<test test-name="navigation_states" pkg="cob_generic_states" type="navigation_states.py" name="navigation_states_test_node" time-limit="30" />
+
+	<!-- test manipulation states -->
+	<test test-name="manipulation_states" pkg="cob_generic_states" type="manipulation_states.py" name="manipulation_states_test_node" time-limit="30" />
+
+	<!-- test perception states -->
+	<test test-name="perception_states" pkg="cob_generic_states" type="perception_states.py" name="perception_states_test_node" time-limit="30" />
+
+	<!-- test state machines -->
+	<test test-name="state_machines" pkg="cob_generic_states" type="state_machines.py" name="state_machines_test_node" time-limit="30" />
+
+
+</launch>
