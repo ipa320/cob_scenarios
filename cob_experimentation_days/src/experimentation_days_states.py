@@ -15,6 +15,10 @@ class prepare_robot(smach.State):
 			outcomes=['succeeded', 'failed'])
 
 	def execute(self, userdata):
+		sss.sleep(2)
+		# say hello
+		sss.say(["Hello, my name is Care-o-bot."])
+	
 		# bring robot into the starting state
 		handle_tray = sss.move("tray","down",False)
 		handle_torso = sss.move("torso","home",False)

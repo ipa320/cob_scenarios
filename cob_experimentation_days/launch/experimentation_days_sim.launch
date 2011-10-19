@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<launch>
+
+	<!-- start bringup-->
+	<include file="$(find cob_bringup)/ros/launch/sim.launch"/>
+
+	<!-- start scenario packages -->
+	<include file="$(find cob_experimentation_days)/launch/experimentation_days.launch"/>
+	
+</launch>
