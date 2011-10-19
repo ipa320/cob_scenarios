@@ -20,8 +20,8 @@
   <depend package="cob_script_server"/>
   
   <!-- this dependencies should better be in a separate msgs package to reduce dependencies-->
-  <depend package="cob_object_detection"/>
-  <depend package="cob_tablet_gui"/>
+  <depend package="cob_object_detection_msgs"/>
   <depend package="cob_mmcontroller"/>
+  <depend package="cob_tray_sensors"/>
 
 </package>

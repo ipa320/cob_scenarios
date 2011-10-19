@@ -141,13 +141,15 @@ class approach_pose(smach.State):
 # This state tries once to move the robot to the given pose.
 class approach_pose_without_retry(smach.State):
 
-	def __init__(self, pose = ""):
+	def __init__(self, pose = "", mode = "omni", move_second = "False"):
 		smach.State.__init__(
 			self,
 			outcomes=['succeeded', 'failed'],
 			input_keys=['base_pose'])
 
 		self.pose = pose
+		self.mode = mode
+		self.move_second = move_second
 
 	def execute(self, userdata):
 		# determine target position
@@ -166,7 +168,7 @@ class approach_pose_without_retry(smach.State):
 
 		# try reaching pose
 		handle_base = sss.move("base", pose, mode=self.mode, blocking=False)
-		move_second = False
+		move_second = self.move_second
 
 		timeout = 0
 		while True:

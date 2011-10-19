@@ -74,13 +74,28 @@ class TestStates(unittest.TestCase):
 			error_message = "Unexpected error:", sys.exc_info()[0]
 			self.fail(error_message)
 
-	def test_put_object_on_tray(self):
+	def test_put_object_on_tray_side(self):
 		# create a SMACH state machine
 		SM = smach.StateMachine(outcomes=['overall_succeeded','overall_failed'])
 
 		# open the container
 		with SM:
-			smach.StateMachine.add('TEST', put_object_on_tray(),
+			smach.StateMachine.add('TEST', put_object_on_tray_side(),
+				transitions={'succeeded':'overall_succeeded', 'failed':'overall_failed'})
+
+		try:
+			SM.execute()
+		except:
+			error_message = "Unexpected error:", sys.exc_info()[0]
+			self.fail(error_message)
+
+	def test_put_object_on_tray_top(self):
+		# create a SMACH state machine
+		SM = smach.StateMachine(outcomes=['overall_succeeded','overall_failed'])
+
+		# open the container
+		with SM:
+			smach.StateMachine.add('TEST', put_object_on_tray_top(),
 				transitions={'succeeded':'overall_succeeded', 'failed':'overall_failed'})
 
 		try:

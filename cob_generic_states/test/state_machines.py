@@ -32,11 +32,15 @@ class TestStates(unittest.TestCase):
 	def test_sm_pick_object(self):
 		# create a SMACH state machine
 		SM = smach.StateMachine(outcomes=['overall_succeeded','overall_failed'])
+		SM.userdata.object_name = "milk"
 
 		# open the container
 		with SM:
 			smach.StateMachine.add('TEST', sm_pick_object(),
-				transitions={'succeeded':'overall_succeeded', 'failed':'overall_failed'})
+				transitions={'object_picked_side':'overall_succeeded',
+							'object_picked_top':'overall_succeeded',
+							'object_not_picked':'overall_failed',
+							'failed':'overall_failed'})
 
 		try:
 			SM.execute()

@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-import roslib; roslib.load_manifest('cob_iros2011')
+import roslib; roslib.load_manifest('cob_generic_states')
 import rospy
 
 import smach

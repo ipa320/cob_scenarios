@@ -66,7 +66,6 @@ sss = simple_script_server()
 
 from cob_generic_states.srv import *
 
-from cob_tablet_gui.srv import *
 from cob_tray_sensors.srv import *
 
 ## Initialize state
