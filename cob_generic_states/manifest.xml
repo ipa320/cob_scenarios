@@ -18,9 +18,10 @@
   <depend package="kinematics_msgs"/>
   
   <depend package="cob_script_server"/>
+  <depend package="cob_object_detection_msgs"/>
+  <depend package="cob_object_detection_fake"/>
   
   <!-- this dependencies should better be in a separate msgs package to reduce dependencies-->
-  <depend package="cob_object_detection_msgs"/>
   <depend package="cob_mmcontroller"/>
   <depend package="cob_tray_sensors"/>
 

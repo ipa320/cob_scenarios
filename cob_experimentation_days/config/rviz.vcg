@@ -22,6 +22,12 @@ Grid.OffsetZ=0
 Grid.Plane=0
 Grid.Plane\ Cell\ Count=10
 Grid.Reference\ Frame=<Fixed Frame>
+Inflated\ Obstacles.Alpha=0.25
+Inflated\ Obstacles.ColorR=0
+Inflated\ Obstacles.ColorG=0
+Inflated\ Obstacles.ColorB=1
+Inflated\ Obstacles.Enabled=1
+Inflated\ Obstacles.Topic=/move_base/local_costmap/inflated_obstacles
 Laser\ Scan\ Front.Alpha=1
 Laser\ Scan\ Front.Billboard\ Size=0.025
 Laser\ Scan\ Front.Color\ Transformer=Intensity
@@ -82,6 +88,12 @@ Map.Alpha=0.7
 Map.Draw\ Behind=0
 Map.Enabled=1
 Map.Topic=/map
+Obstacles.Alpha=1
+Obstacles.ColorR=1
+Obstacles.ColorG=0
+Obstacles.ColorB=0
+Obstacles.Enabled=1
+Obstacles.Topic=/move_base/local_costmap/obstacles
 Path.Alpha=1
 Path.ColorR=0.1
 Path.ColorG=1
@@ -197,8 +209,8 @@ TF.Update\ Interval=0
 Tool\ 2D\ Nav\ GoalTopic=move_base_simple/goal
 Tool\ 2D\ Pose\ EstimateTopic=initialpose
 Camera\ Type=rviz::OrbitViewController
-Camera\ Config=0.632793 5.05396 7.87887 -0.021366 0.50962 1.09017
-Property\ Grid\ State=selection=Pose Array.Enabled;expanded=.Global Options,TF.Enabled.TF.StatusTopStatus,TF.Enabled.TF.Tree;scrollpos=0,0;splitterpos=150,301;ispageselected=1
+Camera\ Config=0.847793 4.95396 7.87887 -0.021366 0.50962 1.09017
+Property\ Grid\ State=selection=;expanded=.Global Options,TF.Enabled.TF.StatusTopStatus,TF.Enabled.TF.Tree,Axes.Enabled;scrollpos=0,0;splitterpos=150,301;ispageselected=1
 [Display0]
 Name=Grid
 Package=rviz
@@ -228,10 +240,18 @@ Name=Pose Array
 Package=rviz
 ClassName=rviz::PoseArrayDisplay
 [Display7]
+Name=Obstacles
+Package=rviz
+ClassName=rviz::GridCellsDisplay
+[Display8]
+Name=Inflated Obstacles
+Package=rviz
+ClassName=rviz::GridCellsDisplay
+[Display9]
 Name=Path
 Package=rviz
 ClassName=rviz::PathDisplay
-[Display8]
+[Display10]
 Name=Axes
 Package=rviz
 ClassName=rviz::AxesDisplay
