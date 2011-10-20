@@ -3,13 +3,13 @@
 
 	<!-- upload button parameters, but delete the old ones before -->
 	<rosparam command="delete" param="dashboard"/>
-	<rosparam command="load" ns="dashboard/control_buttons" file="$(find cob_experimentation_days)/ros/config/dashboard/control_buttons_$(env ROBOT).yaml"/>
-	<rosparam command="load" ns="dashboard/nav_buttons" file="$(find cob_experimentation_days)/ros/config/dashboard/nav_buttons_$(env ROBOT_ENV).yaml"/>
+	<rosparam command="load" ns="dashboard/control_buttons" file="$(find cob_experimentation_days)/config/dashboard/control_buttons_$(env ROBOT).yaml"/>
+	<rosparam command="load" ns="dashboard/nav_buttons" file="$(find cob_experimentation_days)/config/dashboard/nav_buttons_$(env ROBOT_ENV).yaml"/>
 	
 	<!-- upload script server parameters -->
 	<include ns="script_server" file="$(find cob_default_config)/robots/$(env ROBOT)/upload_param.launch"/>
 	<include ns="script_server" file="$(find cob_default_config)/envs/upload_env_param.launch"/>
-	<include file="$(find cob_experimentation_days)/ros/config/upload_param.launch"/>
+	<include file="$(find cob_experimentation_days)/config/upload_param.launch"/>
 	
 	<!-- start dashboard -->
 	<node pkg="cob_dashboard" type="knoeppkes.py" name="$(anon dashboard_node)" ns="dashboard" cwd="node" respawn="false" output="screen" />
