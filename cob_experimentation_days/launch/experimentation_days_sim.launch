@@ -2,7 +2,7 @@
 <launch>
 
 	<!-- start bringup-->
-	<include file="$(find cob_bringup)/ros/launch/sim.launch"/>
+	<include file="$(find cob_bringup_sim)/launch/robot.launch"/>
 
 	<!-- start scenario packages -->
 	<include file="$(find cob_experimentation_days)/launch/experimentation_days.launch"/>

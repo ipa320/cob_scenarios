@@ -2,7 +2,7 @@
 <launch>
 
 	<!-- start bringup-->
-	<include file="$(find cob_bringup)/ros/launch/robot.launch"/>
+	<include file="$(find cob_bringup)/robot.launch"/>
 	
 	<param name="/sound_controller/mode" value="cepstral"/>
 
