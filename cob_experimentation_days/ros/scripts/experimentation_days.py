@@ -31,16 +31,17 @@ def main():
 	with SM:
 		# add states to the container
 		smach.StateMachine.add('PREPARE_ROBOT', prepare_robot(),
-			transitions={'succeeded':'MOVE_TO_KITCHEN', 
-						'failed':'failed'})
-		
-		smach.StateMachine.add('MOVE_TO_KITCHEN', approach_pose("kitchen"),
-			transitions={'succeeded':'MOVE_TO_GRASP_POSITION', 
-						'failed':'failed'})
-						
-		smach.StateMachine.add('MOVE_TO_GRASP_POSITION', approach_pose("grasp",mode="linear"),
 			transitions={'succeeded':'SM_PICK_OBJECT', 
 						'failed':'failed'})
+		#Quiero mover la base manualmente fuera del escenario. No lo dejes asi!! es solo una solucion provisional
+		#smach.StateMachine.add('MOVE_TO_KITCHEN', approach_pose("kitchen"),
+			#transitions={'succeeded':'MOVE_TO_GRASP_POSITION', 
+						#'failed':'failed'})
+		
+		
+	#	smach.StateMachine.add('MOVE_TO_GRASP_POSITION', approach_pose("grasp",mode="linear"),
+	#		transitions={'succeeded':'SM_PICK_OBJECT', 
+	#					'failed':'failed'})
 
 		smach.StateMachine.add('SM_PICK_OBJECT', sm_pick_object(),
 			transitions={'object_picked_side':'PUT_OBJECT_ON_TRAY_SIDE', 
