@@ -6,7 +6,7 @@
 
 	<!-- upload default parameters -->
 	<include file="$(find cob_default_config)/$(env ROBOT)/upload_param_$(env ROBOT).launch"/>
-	<!--include file="$(find cob_default_config)/envs/upload_env_param.launch"/-->
+	<include file="$(find cob_default_env_config)/upload_param.launch"/>
 	
 	<!-- upload cob_experimentation_days parameters -->
 	<include file="$(find cob_experimentation_days)/config/upload_param.launch"/>

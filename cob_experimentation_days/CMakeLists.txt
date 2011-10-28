@@ -30,6 +30,7 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 #target_link_libraries(example ${PROJECT_NAME})
 
 # rostest
-rosbuild_add_roslaunch_check(launch/experimentation_days.launch)
-rosbuild_add_roslaunch_check(launch/experimentation_days_robot.launch)
-#rosbuild_add_roslaunch_check(launch/experimentation_days_sim.launch)
+rosbuild_add_roslaunch_check(launch/experimentation_days.launch ROBOT=cob3-3)
+rosbuild_add_roslaunch_check(launch/experimentation_days_robot.launch ROBOT=cob3-3)
+rosbuild_add_roslaunch_check(launch/experimentation_days_sim.launch ROBOT=cob3-3)
+rosbuild_add_roslaunch_check(launch/dashboard.launch ROBOT=cob3-3)
