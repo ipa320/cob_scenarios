@@ -4,16 +4,22 @@
      cob_experimentation_days
 
   </description>
-  <author>fmw</author>
-  <license>BSD</license>
+  <author>Florian Weisshardt</author>
+  <license>LGPL</license>
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/cob_experimentation_days</url>
   <depend package="cob_generic_states"/>
   <depend package="rospy"/>
   <depend package="smach"/>
   <depend package="cob_script_server"/>
+  <depend package="cob_default_config"/>
+  <depend package="cob_default_env_config"/>
   <depend package="cob_dashboard"/>
   <depend package="cob_bringup"/>
+  <depend package="cob_bringup_sim"/>
+  <depend package="cob_2dnav"/>
+  <depend package="cob_object_detection_fake"/>
+
 
 </package>
 

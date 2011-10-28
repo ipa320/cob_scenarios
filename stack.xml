@@ -5,9 +5,13 @@
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/cob_scenarios</url>
   <depend stack="arm_navigation" /> <!-- kinematics_msgs -->
-  <depend stack="cob_apps" /> <!-- cob_bringup, cob_dashboard, cob_script_server, cob_mmcontroller -->
+  <depend stack="cob_command_tools" /> <!-- cob_dashboard, cob_script_server -->
   <depend stack="cob_driver" /> <!-- cob_tray_sensors -->
-  <depend stack="cob_object_perception" /> <!-- cob_object_detection_msgs -->
+  <depend stack="cob_manipulation" /> <!-- cob_mmcontroller -->
+  <depend stack="cob_navigation" /> <!-- cob_2dnav -->
+  <depend stack="cob_object_perception" /> <!-- cob_object_detection_msgs, cob_object_detection_fake -->
+  <depend stack="cob_robots" /> <!-- cob_default_config, cob_default_env_config, cob_bringup -->
+  <depend stack="cob_simulation" /> <!-- cob_bringup_sim -->
   <depend stack="common_msgs" /> <!-- actionlib_msgs -->
   <depend stack="executive_smach" /> <!-- smach_ros, smach -->
   <depend stack="geometry" /> <!-- tf -->
