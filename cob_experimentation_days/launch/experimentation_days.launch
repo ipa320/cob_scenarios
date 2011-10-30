@@ -5,7 +5,7 @@
 	<include file="$(find cob_2dnav)/ros/launch/2dnav_dwa.launch"/>
 
 	<!-- upload default parameters -->
-	<include file="$(find cob_default_config)/$(env ROBOT)/upload_param_$(env ROBOT).launch"/>
+	<include file="$(find cob_default_robot_config)/$(env ROBOT)/upload_param_$(env ROBOT).launch"/>
 	<include file="$(find cob_default_env_config)/upload_param.launch"/>
 	
 	<!-- upload cob_experimentation_days parameters -->
