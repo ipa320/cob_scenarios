@@ -92,6 +92,7 @@ class select_grasp(smach.State):
 		try:
 			# transform object_pose into base_link
 			object_pose_in = userdata.object.pose
+			print object_pose_in
 			object_pose_in.header.stamp = self.listener.getLatestCommonTime("/base_link",object_pose_in.header.frame_id)
 			object_pose_bl = self.listener.transformPose("/base_link", object_pose_in)
 		except rospy.ROSException, e:

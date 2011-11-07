@@ -2,7 +2,10 @@
 <launch>
 
 	<!-- start navigation -->
-	<!--<include file="$(find cob_2dnav)/ros/launch/2dnav_dwa.launch"/>  --> <!--le he quitado la navegación-->
+	<include file="$(find cob_2dnav)/ros/launch/2dnav_dwa.launch"/>  
+
+	<!-- start manipulation -->
+	<include file="$(find cob_manipulator)/ros/launch/kdl_solver.launch"/>  
 
 	<!-- upload default parameters -->
 	<include file="$(find cob_default_config)/$(env ROBOT)/upload_param_$(env ROBOT).launch"/>
