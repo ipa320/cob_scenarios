@@ -7,6 +7,6 @@
 	<param name="/sound_controller/mode" value="cepstral"/>
 
 	<!-- start scenario packages -->
-	<include file="$(find cob_experimentation_days)/ros/launch/experimentation_days.launch"/>
+	<include file="$(find cob_experimentation_days)/launch/experimentation_days.launch"/>
 	
 </launch>

@@ -209,7 +209,7 @@ TF.Update\ Interval=0
 Tool\ 2D\ Nav\ GoalTopic=move_base_simple/goal
 Tool\ 2D\ Pose\ EstimateTopic=initialpose
 Camera\ Type=rviz::OrbitViewController
-Camera\ Config=0.847793 4.95396 7.87887 -0.021366 0.50962 1.09017
+Camera\ Config=0.727793 0.318955 7.87887 -0.021366 0.50962 1.09017
 Property\ Grid\ State=selection=;expanded=.Global Options,TF.Enabled.TF.StatusTopStatus,TF.Enabled.TF.Tree,Axes.Enabled;scrollpos=0,0;splitterpos=150,301;ispageselected=1
 [Display0]
 Name=Grid
