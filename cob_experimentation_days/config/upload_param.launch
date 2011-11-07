@@ -3,6 +3,5 @@
 
 	<!-- send ROBOT parameters to parameter server -->
 	<rosparam command="load" ns="/script_server/base" file="$(find cob_experimentation_days)/config/$(env ROBOT_ENV)/navigation_goals.yaml"/>
-	<!--rosparam command="load" ns="/script_server/arm" file="$(find cob_experimentation_days)/config/$(env ROBOT)/arm_joint_configurations.yaml"/-->
 	
 </launch>

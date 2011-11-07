@@ -92,6 +92,7 @@ class select_grasp(smach.State):
 		try:
 			# transform object_pose into base_link
 			object_pose_in = userdata.object.pose
+			print object_pose_in
 			object_pose_in.header.stamp = self.listener.getLatestCommonTime("/base_link",object_pose_in.header.frame_id)
 			object_pose_bl = self.listener.transformPose("/base_link", object_pose_in)
 		except rospy.ROSException, e:
@@ -117,7 +118,7 @@ class grasp_side(smach.State):
 		
 		self.max_retries = max_retries
 		self.retries = 0
-		self.iks = rospy.ServiceProxy('/arm_controller/get_ik', GetPositionIK)
+		self.iks = rospy.ServiceProxy('/arm_kinematics/get_ik', GetPositionIK)
 		self.listener = tf.TransformListener()
 		self.stiffness = rospy.ServiceProxy('/arm_controller/set_joint_stiffness', SetJointStiffness)
 
@@ -158,9 +159,9 @@ class grasp_side(smach.State):
 		object_pose_bl.pose.orientation.w = new_w
 
 		# FIXME: this is calibration between camera and hand and should be removed from scripting level
-		object_pose_bl.pose.position.x = object_pose_bl.pose.position.x - 0.06 #- 0.08
-		#object_pose_bl.pose.position.y = object_pose_bl.pose.position.y - 0.05
-		object_pose_bl.pose.position.z = object_pose_bl.pose.position.z - 0.1
+		object_pose_bl.pose.position.x = object_pose_bl.pose.position.x #- 0.06 #- 0.08
+		object_pose_bl.pose.position.y = object_pose_bl.pose.position.y #- 0.05
+		object_pose_bl.pose.position.z = object_pose_bl.pose.position.z  #- 0.1
 		
 		# calculate pre and post grasp positions
 		pre_grasp_bl = PoseStamped()
@@ -168,10 +169,16 @@ class grasp_side(smach.State):
 		pre_grasp_bl = copy.deepcopy(object_pose_bl)
 		post_grasp_bl = copy.deepcopy(object_pose_bl)
 
+		#pre_grasp_bl.pose.position.x = pre_grasp_bl.pose.position.x + 0.10 # x offset for pre grasp position
+		#pre_grasp_bl.pose.position.y = pre_grasp_bl.pose.position.y + 0.10 # y offset for pre grasp position
+		#post_grasp_bl.pose.position.x = post_grasp_bl.pose.position.x + 0.05 # x offset for post grasp position
+		#post_grasp_bl.pose.position.z = post_grasp_bl.pose.position.z + 0.15 # z offset for post grasp position
+
 		pre_grasp_bl.pose.position.x = pre_grasp_bl.pose.position.x + 0.10 # x offset for pre grasp position
 		pre_grasp_bl.pose.position.y = pre_grasp_bl.pose.position.y + 0.10 # y offset for pre grasp position
+		pre_grasp_bl.pose.position.z = pre_grasp_bl.pose.position.z + 0.15 # y offset for pre grasp position
 		post_grasp_bl.pose.position.x = post_grasp_bl.pose.position.x + 0.05 # x offset for post grasp position
-		post_grasp_bl.pose.position.z = post_grasp_bl.pose.position.z + 0.15 # z offset for post grasp position
+		post_grasp_bl.pose.position.z = post_grasp_bl.pose.position.z + 0.17 # z offset for post grasp position
 		
 		# calculate ik solutions for pre grasp configuration
 		arm_pre_grasp = rospy.get_param("/script_server/arm/pregrasp")
@@ -224,7 +231,7 @@ class grasp_top(smach.State):
 		
 		self.max_retries = max_retries
 		self.retries = 0
-		self.iks = rospy.ServiceProxy('/arm_controller/get_ik', GetPositionIK)
+		self.iks = rospy.ServiceProxy('/arm_kinematics/get_ik', GetPositionIK)
 		self.listener = tf.TransformListener()
 		self.stiffness = rospy.ServiceProxy('/arm_controller/set_joint_stiffness', SetJointStiffness)
 
@@ -266,9 +273,9 @@ class grasp_top(smach.State):
 		object_pose_bl.pose.orientation.w = new_w
 
 		# FIXME: this is calibration between camera and hand and should be removed from scripting level
-		object_pose_bl.pose.position.x = object_pose_bl.pose.position.x -0.04 #- 0.08
+		object_pose_bl.pose.position.x = object_pose_bl.pose.position.x #-0.04 #- 0.08
 		object_pose_bl.pose.position.y = object_pose_bl.pose.position.y# + 0.02
-		object_pose_bl.pose.position.z = object_pose_bl.pose.position.z + 0.07
+		object_pose_bl.pose.position.z = object_pose_bl.pose.position.z #+ 0.07
 
 		# calculate pre and post grasp positions
 		pre_grasp_bl = PoseStamped()
@@ -276,7 +283,7 @@ class grasp_top(smach.State):
 		pre_grasp_bl = copy.deepcopy(object_pose_bl)
 		post_grasp_bl = copy.deepcopy(object_pose_bl)
 	
-		pre_grasp_bl.pose.position.z = pre_grasp_bl.pose.position.z + 0.12 # z offset for pre grasp position
+		pre_grasp_bl.pose.position.z = pre_grasp_bl.pose.position.z + 0.18 # z offset for pre grasp position
 		post_grasp_bl.pose.position.x = post_grasp_bl.pose.position.x + 0.05 # x offset for post grasp position
 		post_grasp_bl.pose.position.z = post_grasp_bl.pose.position.z + 0.15 # z offset for post grasp position
 		
@@ -331,7 +338,7 @@ class open_door(smach.State):
 
 		self.max_retries = max_retries
 		self.retries = 0
-		self.iks = rospy.ServiceProxy('/arm_controller/get_ik', GetPositionIK)
+		self.iks = rospy.ServiceProxy('/arm_kinematics/get_ik', GetPositionIK)
 		self.listener = tf.TransformListener()
 		self.mmstart = rospy.ServiceProxy('/mm/start', Trigger)
 		self.mmstop = rospy.ServiceProxy('/mm/stop', Trigger)
