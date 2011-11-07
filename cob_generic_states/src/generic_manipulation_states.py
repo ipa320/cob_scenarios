@@ -118,7 +118,7 @@ class grasp_side(smach.State):
 		
 		self.max_retries = max_retries
 		self.retries = 0
-		self.iks = rospy.ServiceProxy('/arm_controller/get_ik', GetPositionIK)
+		self.iks = rospy.ServiceProxy('/arm_kinematics/get_ik', GetPositionIK)
 		self.listener = tf.TransformListener()
 		self.stiffness = rospy.ServiceProxy('/arm_controller/set_joint_stiffness', SetJointStiffness)
 
