@@ -1,0 +1,5 @@
+# ipa-kitchen
+pre_kitchen: [-1.5, 0.3, 0]
+grasp: [-2.04, 0.3, 0]
+post_kitchen: [-1.5, 0.3, 0]
+deliver: [1, -0.5, -0.7]

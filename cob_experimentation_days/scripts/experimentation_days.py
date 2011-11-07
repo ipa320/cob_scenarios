@@ -31,26 +31,31 @@ def main():
 	with SM:
 		# add states to the container
 		smach.StateMachine.add('PREPARE_ROBOT', prepare_robot(),
+			transitions={'succeeded':'MOVE_TO_KITCHEN', 
+						'failed':'failed'})
+
+		smach.StateMachine.add('MOVE_TO_KITCHEN', approach_pose("pre_kitchen",mode="linear"),
+			transitions={'succeeded':'MOVE_TO_GRASP_POSITION', 
+						'failed':'failed'})
+		
+		
+		smach.StateMachine.add('MOVE_TO_GRASP_POSITION', approach_pose("grasp",mode="linear"),
 			transitions={'succeeded':'SM_PICK_OBJECT', 
 						'failed':'failed'})
-		#Quiero mover la base manualmente fuera del escenario. No lo dejes asi!! es solo una solucion provisional
-		#smach.StateMachine.add('MOVE_TO_KITCHEN', approach_pose("kitchen"),
-			#transitions={'succeeded':'MOVE_TO_GRASP_POSITION', 
-						#'failed':'failed'})
-		
-		
-	#	smach.StateMachine.add('MOVE_TO_GRASP_POSITION', approach_pose("grasp",mode="linear"),
-	#		transitions={'succeeded':'SM_PICK_OBJECT', 
-	#					'failed':'failed'})
 
 		smach.StateMachine.add('SM_PICK_OBJECT', sm_pick_object(),
-			transitions={'object_picked_side':'PUT_OBJECT_ON_TRAY_SIDE', 
-						'object_picked_top':'PUT_OBJECT_ON_TRAY_TOP',  
+			transitions={'object_picked_side':'MOVE_TO_POST_TABLE_SIDE', 
+						'object_picked_top':'MOVE_TO_POST_TABLE_TOP',  
 						'object_not_picked':'failed', 
 						'failed':'failed'})
 						
-		smach.StateMachine.add('MOVE_TO_POST_TABLE', approach_pose("post_table"),
+		smach.StateMachine.add('MOVE_TO_POST_TABLE_SIDE', approach_pose("post_kitchen", mode="linear"),
 			transitions={'succeeded':'PUT_OBJECT_ON_TRAY_SIDE', 
+						'failed':'failed'},
+			remapping={'base_pose':'base_pre_pose'})
+
+		smach.StateMachine.add('MOVE_TO_POST_TABLE_TOP', approach_pose("post_kitchen", mode="linear"),
+			transitions={'succeeded':'PUT_OBJECT_ON_TRAY_TOP', 
 						'failed':'failed'},
 			remapping={'base_pose':'base_pre_pose'})
 
@@ -62,13 +67,8 @@ def main():
 				transitions={'succeeded':'MOVE_TO_DELIVER_POSITION', 
 							'failed':'failed'})
 
-		smach.StateMachine.add('MOVE_TO_DELIVER_POSITION', approach_pose("order"),
-			transitions={'succeeded':'DELIVER_OBJECT', 
-						'failed':'failed'})
-
-		smach.StateMachine.add('DELIVER_OBJECT', deliver_object(),
+		smach.StateMachine.add('MOVE_TO_DELIVER_POSITION', approach_pose("deliver", mode="linear"),
 			transitions={'succeeded':'SAY_GOODBYE', 
-						'retry':'DELIVER_OBJECT',
 						'failed':'failed'})
 
 		smach.StateMachine.add('SAY_GOODBYE', say_goodbye(),

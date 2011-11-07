@@ -2,7 +2,8 @@
 <launch>
 
 	<!-- start navigation -->
-	<include file="$(find cob_2dnav)/ros/launch/2dnav_dwa.launch"/>  
+	<include file="$(find cob_2dnav)/ros/launch/2dnav_dwa.launch"/>
+	<include file="$(find cob_linear_nav)/ros/launch/linear_nav.launch"/>
 
 	<!-- start manipulation -->
 	<include file="$(find cob_manipulator)/ros/launch/kdl_solver.launch"/>  
