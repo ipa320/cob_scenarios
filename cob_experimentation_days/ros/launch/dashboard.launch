@@ -7,7 +7,7 @@
 	<rosparam command="load" ns="dashboard/nav_buttons" file="$(find cob_experimentation_days)/ros/config/dashboard/nav_buttons_$(env ROBOT_ENV).yaml"/>
 	
 	<!-- upload script server parameters -->
-	<include file="$(find cob_default_config)/upload_param.launch"/>
+	<include file="$(find cob_default_robot_config)/upload_param.launch"/>
 	<include file="$(find cob_default_env_config)/upload_param.launch"/>
 	<include file="$(find cob_experimentation_days)/ros/config/upload_param.launch"/>
 	
