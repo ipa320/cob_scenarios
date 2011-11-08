@@ -38,3 +38,7 @@
     uri: 'git://github.com/ipa320/cob_simulation.git'
     local-name: cob_simulation
     version: experimentation_days
+- git:
+    uri: 'git://github.com/ipa320/schunk_modular_robotics.git'
+    local-name: schunk_modular_robotics
+    version: experimentation_days
