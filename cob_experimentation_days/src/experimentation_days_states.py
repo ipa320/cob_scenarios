@@ -41,7 +41,7 @@ class say_goodbye(smach.State):
 			outcomes=['succeeded', 'failed'])
 
 	def execute(self, userdata):
-		handle_base = sss.move("base","home",False)
+		handle_base = sss.move("base","home", mode="linear", blocking= False)
 		sss.say(["Goodbye, perhaps we will meet again."])
 		sss.move("torso","shake",False)
 		handle_base.wait()
