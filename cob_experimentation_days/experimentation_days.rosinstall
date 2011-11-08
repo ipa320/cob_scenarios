@@ -11,6 +11,10 @@
     local-name: cob_command_tools
     version: experimentation_days
 - git:
+    uri: 'git://github.com/ipa320/cob_common.git'
+    local-name: cob_common
+    version: experimentation_days
+- git:
     uri: 'git://github.com/ipa320/cob_driver.git'
     local-name: cob_driver
     version: experimentation_days
