@@ -84,7 +84,7 @@ class select_grasp(smach.State):
 			outcomes=['top', 'side', 'failed'],
 			input_keys=['object'])
 		
-		self.height_switch = 0.85 # Switch to select top or side grasp using the height of the object over the ground in [m].
+		self.height_switch = 0.5 # Switch to select top or side grasp using the height of the object over the ground in [m].
 		
 		self.listener = tf.TransformListener()
 
