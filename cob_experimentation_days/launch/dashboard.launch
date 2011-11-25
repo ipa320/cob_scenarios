@@ -2,19 +2,16 @@
 <launch>
 
 	<!-- upload button parameters, but delete the old ones before -->
-	<rosparam command="delete" param="dashboard"/>
-	<rosparam command="load" ns="dashboard/control_buttons" file="$(find cob_experimentation_days)/config/dashboard/control_buttons_$(env ROBOT).yaml"/>
-	<rosparam command="load" ns="dashboard/nav_buttons" file="$(find cob_experimentation_days)/config/dashboard/nav_buttons_$(env ROBOT_ENV).yaml"/>
+	<rosparam command="delete" param="command_gui"/>
+	<rosparam command="load" ns="command_gui/control_buttons" file="$(find cob_experimentation_days)/config/command_gui/control_buttons_$(env ROBOT).yaml"/>
+	<rosparam command="load" ns="command_gui/nav_buttons" file="$(find cob_experimentation_days)/config/command_gui/nav_buttons_$(env ROBOT_ENV).yaml"/>
 	
 	<!-- upload script server parameters -->
 	<include file="$(find cob_default_robot_config)/upload_param.launch"/>
-	<include file="$(find cob_default_env_config)/upload_param.launch"/>
 	<include file="$(find cob_experimentation_days)/config/upload_param.launch"/>
 	
-	<!-- start dashboard -->
-	<node pkg="cob_dashboard" type="knoeppkes.py" name="$(anon dashboard_node)" ns="dashboard" cwd="node" respawn="false" output="screen" />
-	
-	<!-- include rostest -->
-	<include file="$(find cob_script_server)/launch/script_server.test" />
-	
+	<!-- start dashboards -->
+	<node pkg="cob_dashboard" type="cob_dashboard" name="$(anon dashboard_node)" cwd="node" respawn="false" output="screen" />
+	<node pkg="cob_command_gui" type="knoeppkes.py" name="$(anon command_gui_node)" ns="dashboard" cwd="node" respawn="false" output="screen" />
+
 </launch>
