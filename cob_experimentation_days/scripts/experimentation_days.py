@@ -25,7 +25,7 @@ def main():
 
 	# create a SMACH state machine
 	SM = smach.StateMachine(outcomes=['succeeded','failed'])
-	SM.userdata.object_name = "Pringles"
+	SM.userdata.object_name = "milk"
 
 	# open the container
 	with SM:
