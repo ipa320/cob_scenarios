@@ -5,7 +5,7 @@
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/cob_scenarios</url>
   <depend stack="arm_navigation" /> <!-- kinematics_msgs -->
-  <depend stack="cob_command_tools" /> <!-- cob_dashboard, cob_script_server -->
+  <depend stack="cob_command_tools" /> <!-- cob_command_gui, cob_dashboard, cob_script_server -->
   <depend stack="cob_driver" /> <!-- cob_tray_sensors -->
   <depend stack="cob_environments" /> <!-- cob_default_env_config -->
   <depend stack="cob_manipulation" /> <!-- cob_mmcontroller, cob_manipulator -->
