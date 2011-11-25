@@ -25,7 +25,7 @@ def main():
 
 	# create a SMACH state machine
 	SM = smach.StateMachine(outcomes=['succeeded','failed'])
-	SM.userdata.object_name = "milk"
+	SM.userdata.object_name = "Pringles"
 
 	# open the container
 	with SM:
@@ -34,7 +34,7 @@ def main():
 			transitions={'succeeded':'MOVE_TO_KITCHEN', 
 						'failed':'failed'})
 
-		smach.StateMachine.add('MOVE_TO_KITCHEN', approach_pose("pre_kitchen",mode="linear"),
+		smach.StateMachine.add('MOVE_TO_KITCHEN', approach_pose("pre_kitchen",mode="omni"),
 			transitions={'succeeded':'MOVE_TO_GRASP_POSITION', 
 						'failed':'failed'})
 		
@@ -67,7 +67,7 @@ def main():
 				transitions={'succeeded':'MOVE_TO_DELIVER_POSITION', 
 							'failed':'failed'})
 
-		smach.StateMachine.add('MOVE_TO_DELIVER_POSITION', approach_pose("deliver", mode="linear"),
+		smach.StateMachine.add('MOVE_TO_DELIVER_POSITION', approach_pose("deliver", mode="omni"),
 			transitions={'succeeded':'SAY_GOODBYE', 
 						'failed':'failed'})
 
