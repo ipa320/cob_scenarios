@@ -109,6 +109,8 @@ class detect_object(smach.State):
 		# check if maximum retries reached
 		if self.retries > self.max_retries:
 			self.retries = 0
+			handle_torso = sss.move("torso","home",False)
+			handle_torso.wait()
 			return 'no_more_retries'
 		
 		# move sdh as feedback
