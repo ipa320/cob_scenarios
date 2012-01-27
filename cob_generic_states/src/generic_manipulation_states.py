@@ -159,9 +159,9 @@ class grasp_side(smach.State):
 		object_pose_bl.pose.orientation.w = new_w
 
 		# FIXME: this is calibration between camera and hand and should be removed from scripting level
-		object_pose_bl.pose.position.x = object_pose_bl.pose.position.x #- 0.06 #- 0.08
-		object_pose_bl.pose.position.y = object_pose_bl.pose.position.y #- 0.05
-		object_pose_bl.pose.position.z = object_pose_bl.pose.position.z  #- 0.1
+		#object_pose_bl.pose.position.x = object_pose_bl.pose.position.x #- 0.06 #- 0.08
+		#object_pose_bl.pose.position.y = object_pose_bl.pose.position.y #- 0.05
+		object_pose_bl.pose.position.z = object_pose_bl.pose.position.z + 0.1
 		
 		# calculate pre and post grasp positions
 		pre_grasp_bl = PoseStamped()
@@ -199,7 +199,7 @@ class grasp_side(smach.State):
 
 		# execute grasp
 		sss.say(["I am grasping the " + userdata.object.label + " now."],False)
-		sss.move("torso","home")
+		sss.move("torso","front")
 		handle_arm = sss.move("arm", [pre_grasp_conf , grasp_conf],False)
 		sss.move("sdh", "cylopen")
 		handle_arm.wait()
