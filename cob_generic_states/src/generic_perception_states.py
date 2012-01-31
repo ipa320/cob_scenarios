@@ -77,7 +77,7 @@ class detect_object(smach.State):
 	def __init__(self,object_name = "",max_retries = 1):
 		smach.State.__init__(
 			self,
-			outcomes=['succeeded','retry','no_more_retries','failed'],
+			outcomes=['succeeded','no_object','no_more_retries','failed'],
 			input_keys=['object_name'],
 			output_keys=['object'])
 
@@ -156,7 +156,7 @@ class detect_object(smach.State):
 		if len(res.object_list.detections) <= 0:
 			rospy.logerr("No objects found")
 			self.retries += 1
-			return 'retry'
+			return 'no_object'
 		
 		# select nearest object in x-y-plane in head_camera_left_link
 		min_dist = 2 # start value in m
@@ -171,13 +171,13 @@ class detect_object(smach.State):
 		if obj.label == "":
 			rospy.logerr("Object not within target range")
 			self.retries += 1
-			return 'retry'
+			return 'no_object'
 
 		#check if label of object fits to requested object_name
 		if obj.label != object_name:
 			rospy.logerr("The object name doesn't fit.")
 			self.retries += 1
-			return 'retry'
+			return 'no_object'
 
 		# we succeeded to detect an object
 		userdata.object = obj

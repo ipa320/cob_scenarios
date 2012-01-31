@@ -113,7 +113,7 @@ class grasp_side(smach.State):
 	def __init__(self, max_retries = 1):
 		smach.State.__init__(
 			self,
-			outcomes=['succeeded', 'retry', 'no_more_retries', 'failed'],
+			outcomes=['succeeded', 'no_ik_solution', 'no_more_retries', 'failed'],
 			input_keys=['object'])
 		
 		self.max_retries = max_retries
@@ -181,21 +181,21 @@ class grasp_side(smach.State):
 		if(error_code.val != error_code.SUCCESS):
 			rospy.logerr("Ik pre_grasp Failed")
 			self.retries += 1
-			return 'retry'
+			return 'no_ik_solution'
 		
 		# calculate ik solutions for grasp configuration
 		(grasp_conf, error_code) = self.callIKSolver(pre_grasp_conf, object_pose_bl)
 		if(error_code.val != error_code.SUCCESS):
 			rospy.logerr("Ik grasp Failed")
 			self.retries += 1
-			return 'retry'
+			return 'no_ik_solution'
 		
 		# calculate ik solutions for pre grasp configuration
 		(post_grasp_conf, error_code) = self.callIKSolver(grasp_conf, post_grasp_bl)
 		if(error_code.val != error_code.SUCCESS):
 			rospy.logerr("Ik post_grasp Failed")
 			self.retries += 1
-			return 'retry'	
+			return 'no_ik_solution'	
 
 		# execute grasp
 		sss.say(["I am grasping the " + userdata.object.label + " now."],False)
@@ -221,7 +221,7 @@ class grasp_top(smach.State):
 	def __init__(self, max_retries = 1):
 		smach.State.__init__(
 			self,
-			outcomes=['succeeded', 'retry', 'no_more_retries', 'failed'],
+			outcomes=['succeeded', 'no_ik_solution', 'no_more_retries', 'failed'],
 			input_keys=['object'])
 		
 		self.max_retries = max_retries
@@ -288,21 +288,21 @@ class grasp_top(smach.State):
 		if(error_code.val != error_code.SUCCESS):
 			rospy.logerr("Ik pre_grasp Failed")
 			self.retries += 1
-			return 'retry'
+			return 'no_ik_solution'
 		
 		# calculate ik solutions for grasp configuration
 		(grasp_conf, error_code) = self.callIKSolver(pre_grasp_conf, object_pose_bl)
 		if(error_code.val != error_code.SUCCESS):
 			rospy.logerr("Ik grasp Failed")
 			self.retries += 1
-			return 'retry'
+			return 'no_ik_solution'
 		
 		# calculate ik solutions for pre grasp configuration
 		(post_grasp_conf, error_code) = self.callIKSolver(grasp_conf, post_grasp_bl)
 		if(error_code.val != error_code.SUCCESS):
 			rospy.logerr("Ik post_grasp Failed")
 			self.retries += 1
-			return 'retry'	
+			return 'no_ik_solution'	
 
 		# execute grasp
 		sss.say(["I am grasping the " + userdata.object.label + " now."],False)
@@ -328,7 +328,7 @@ class open_door(smach.State):
 	def __init__(self, max_retries = 1):
 		smach.State.__init__(
 			self,
-			outcomes=['succeeded', 'retry', 'no_more_retries', 'failed'],
+			outcomes=['succeeded', 'no_ik_solution', 'no_more_retries', 'failed'],
 			input_keys=['object'])
 
 		self.max_retries = max_retries
@@ -414,14 +414,14 @@ class open_door(smach.State):
 		if(error_code.val != error_code.SUCCESS):
 			rospy.logerr("Ik pre_door_conf Failed")
 			self.retries += 1
-			return 'retry'
+			return 'no_ik_solution'
 
 		# calculate ik solutions for door configuration
 		(door_conf, error_code) = self.callIKSolver(arm_pre_grasp[0], door_handle_pose_bl)
 		if(error_code.val != error_code.SUCCESS):
 			rospy.logerr("Ik door_conf Failed")
 			self.retries += 1
-			return 'retry'
+			return 'no_ik_solution'
 		
 		# move arm to handle
 		sss.move("tray","up",False)
