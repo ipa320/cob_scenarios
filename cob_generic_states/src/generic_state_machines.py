@@ -86,14 +86,14 @@ class sm_open_door(smach.StateMachine):
 class sm_pick_object(smach.StateMachine):
 	def __init__(self):	
 		smach.StateMachine.__init__(self, 
-			outcomes=['object_not_detected','object_picked_top', 'object_picked_side', 'object_not_picked', 'failed'],
+			outcomes=['object_picked_top', 'object_picked_side', 'object_not_picked', 'failed'],
 			input_keys=['object_name'])
 		
 		with self:
 			smach.StateMachine.add('DETECT_OBJECT', detect_object(max_retries = 10),
 				transitions={'succeeded':'SELECT_GRASP', 
-							'no_object':'DETECT_OBJECT', 
-							'no_more_retries':'object_not_detected', 
+							'no_object':'DETECT_OBJECT', 			#no_object -> retry DETECT_OBJECT
+							'no_more_retries':'object_not_picked', 
 							'failed':'failed'})
 
 			smach.StateMachine.add('SELECT_GRASP', select_grasp(),
@@ -103,7 +103,7 @@ class sm_pick_object(smach.StateMachine):
 			
 			smach.StateMachine.add('GRASP_SIDE', grasp_side(max_retries = 10),
 				transitions={'succeeded':'object_picked_side', 
-							'no_ik_solution':'DETECT_OBJECT', 
+							'no_ik_solution':'DETECT_OBJECT', 		#no_ik_solution -> retry DETECT_OBJECT
 							'no_more_retries':'object_not_picked', 
 							'failed':'failed'})
 				
