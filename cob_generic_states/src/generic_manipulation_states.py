@@ -69,7 +69,7 @@ sss = simple_script_server()
 import tf
 from kinematics_msgs.srv import *
 
-#this should be in manipulation_msgs
+# TODO: this should be in manipulation_msgs
 from cob_mmcontroller.msg import *
 
 
@@ -527,6 +527,34 @@ class put_object_on_tray_top(smach.State):
 		
 		# move arm to backside again
 		handle_arm = sss.move("arm","tray_top-to-folded",False)
+		sss.sleep(3)
+		sss.move("sdh","home",False)
+		handle_arm.wait()
+		return 'succeeded'
+
+## Put object on table state for side grasps
+#
+# This state puts a side grasped object on a table, assuming that the robot is already in front of the table
+class put_object_on_table(smach.State):
+
+	def __init__(self):
+		smach.State.__init__(
+			self,
+			outcomes=['succeeded', 'failed'],
+			input_keys=['object_target_pose'])
+
+	def execute(self, userdata):
+		# TODO: for placing the object the wrench information from the arm could be used to determine the placing height exactly
+		# TODO: tke into account the current grasping configuration and use this for releasing the object on the table. FIXME: At the moment only a fixed position is used
+		
+		# move object to release position
+		sss.move("arm","pregrasp")		
+		
+		# release object
+		sss.move("sdh","cylopen")
+		
+		# move arm to backside again
+		handle_arm = sss.move("arm",["hold","folded"],False)
 		sss.sleep(3)
 		sss.move("sdh","home",False)
 		handle_arm.wait()
