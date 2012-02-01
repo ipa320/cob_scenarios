@@ -531,3 +531,4 @@ class put_object_on_tray_top(smach.State):
 		sss.move("sdh","home",False)
 		handle_arm.wait()
 		return 'succeeded'
+
