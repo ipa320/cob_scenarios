@@ -96,6 +96,7 @@ class sm_pick_object(smach.StateMachine):
 							'no_more_retries':'object_not_picked', 
 							'failed':'failed'})
 
+
 			smach.StateMachine.add('SELECT_GRASP', select_grasp(),
 				transitions={'top':'GRASP_TOP', 
 							'side':'GRASP_SIDE', 

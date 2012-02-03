@@ -111,6 +111,7 @@ class detect_object(smach.State):
 			self.retries = 0
 			handle_torso = sss.move("torso","home",False)
 			handle_torso.wait()
+			handle_arm = sss.move("arm","look_at_table-to-folded",False)
 			return 'no_more_retries'
 		
 		# move sdh as feedback
