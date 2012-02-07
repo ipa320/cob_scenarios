@@ -60,6 +60,7 @@ roslib.load_manifest('cob_generic_states')
 import rospy
 import smach
 import smach_ros
+from nav_msgs.msg import Odometry
 
 from simple_script_server import *
 sss = simple_script_server()
@@ -78,8 +79,17 @@ class approach_pose(smach.State):
 		self.pose = pose
 		self.mode = mode
 		self.move_second = move_second
+		self.is_moving = False
+
+
 
 	def execute(self, userdata):
+
+		#Callback for the /base_controller/odometry subscriber
+		def callback(data):
+			self.is_moving = True
+			#rospy.loginfo("/base_controller/odometry is publishing a message")
+
 		# determine target position
 		if self.pose != "":
 			pose = self.pose
@@ -97,6 +107,7 @@ class approach_pose(smach.State):
 		# try reaching pose
 		handle_base = sss.move("base", pose, mode=self.mode, blocking=False)
 		move_second = self.move_second
+		is_moving = self.is_moving
 
 		timeout = 0
 		while True:
@@ -107,26 +118,11 @@ class approach_pose(smach.State):
 			elif (handle_base.get_state() == 3) and (move_second):
 				return 'succeeded'			
 
-			# check if service is available
-			service_full_name = '/base_controller/is_moving'
-			try:
-				rospy.wait_for_service(service_full_name,rospy.get_param('server_timeout',3))
-			except rospy.ROSException, e:
-				error_message = "%s"%e
-				rospy.logerr("<<%s>> service not available, error: %s",service_full_name, error_message)
-				return 'failed'
-		
-			# check if service is callable
-			try:
-				is_moving = rospy.ServiceProxy(service_full_name,Trigger)
-				resp = is_moving()
-			except rospy.ServiceException, e:
-				error_message = "%s"%e
-				rospy.logerr("calling <<%s>> service not successfull, error: %s",service_full_name, error_message)
-				return 'failed'
-		
-			# evaluate sevice response
-			if not resp.success.data: # robot stands still
+			# Subscriber to base_odometry
+			rospy.Subscriber("/base_controller/odometry", Odometry, callback)
+	
+			#Check if the base is moving , with a subcriber to the topic /base_controller/odometry
+			if not is_moving: # robot stands still
 				if timeout > 10:
 					sss.say(["I can not reach my target position because my path or target is blocked"],False)
 					timeout = 0
@@ -150,8 +146,14 @@ class approach_pose_without_retry(smach.State):
 		self.pose = pose
 		self.mode = mode
 		self.move_second = move_second
+		self.is_moving = False
 
 	def execute(self, userdata):
+		#Callback for the /base_controller/odometry subscriber
+		def callback(data):
+			self.is_moving = True
+			#rospy.loginfo("/base_controller/odometry is publishing a message")
+
 		# determine target position
 		if self.pose != "":
 			pose = self.pose
@@ -169,6 +171,7 @@ class approach_pose_without_retry(smach.State):
 		# try reaching pose
 		handle_base = sss.move("base", pose, mode=self.mode, blocking=False)
 		move_second = self.move_second
+		is_moving = self.is_moving
 
 		timeout = 0
 		while True:
@@ -179,26 +182,12 @@ class approach_pose_without_retry(smach.State):
 			elif (handle_base.get_state() == 3) and (move_second):
 				return 'succeeded'		
 
-			# check if service is available
-			service_full_name = '/base_controller/is_moving'
-			try:
-				rospy.wait_for_service(service_full_name,rospy.get_param('server_timeout',3))
-			except rospy.ROSException, e:
-				error_message = "%s"%e
-				rospy.logerr("<<%s>> service not available, error: %s",service_full_name, error_message)
-				return 'failed'
-		
-			# check if service is callable
-			try:
-				is_moving = rospy.ServiceProxy(service_full_name,Trigger)
-				resp = is_moving()
-			except rospy.ServiceException, e:
-				error_message = "%s"%e
-				rospy.logerr("calling <<%s>> service not successfull, error: %s",service_full_name, error_message)
-				return 'failed'
+			# Subscriber to base_odometry
+			rospy.Subscriber("/base_controller/odometry", Odometry, callback)
+
 		
 			# evaluate sevice response
-			if not resp.success.data: # robot stands still
+			if not is_moving: # robot stands still
 				if timeout > 10:
 					sss.say(["I can not reach my target position because my path or target is blocked, I will abort."],False)
 					rospy.wait_for_service('base_controller/stop',10)
