@@ -69,7 +69,7 @@ sss = simple_script_server()
 import tf
 from kinematics_msgs.srv import *
 
-#this should be in manipulation_msgs
+# TODO: this should be in manipulation_msgs
 from cob_mmcontroller.msg import *
 
 
@@ -164,7 +164,7 @@ class grasp_side(smach.State):
 		# FIXME: this is calibration between camera and hand and should be removed from scripting level
 		#object_pose_bl.pose.position.x = object_pose_bl.pose.position.x #- 0.06 #- 0.08
 		#object_pose_bl.pose.position.y = object_pose_bl.pose.position.y #- 0.05
-		object_pose_bl.pose.position.z = object_pose_bl.pose.position.z  + 0.1
+		object_pose_bl.pose.position.z = object_pose_bl.pose.position.z + 0.1
 		
 		# calculate pre and post grasp positions
 		pre_grasp_bl = PoseStamped()
