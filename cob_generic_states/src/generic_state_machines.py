@@ -90,7 +90,7 @@ class sm_pick_object(smach.StateMachine):
 			input_keys=['object_name'])
 		
 		with self:
-			smach.StateMachine.add('DETECT_OBJECT', detect_object(max_retries = 10),
+			smach.StateMachine.add('DETECT_OBJECT', detect_object(max_retries = 5),
 				transitions={'succeeded':'SELECT_GRASP', 
 							'no_object':'DETECT_OBJECT', 			#no_object -> retry DETECT_OBJECT
 							'no_more_retries':'object_not_picked', 
@@ -102,13 +102,13 @@ class sm_pick_object(smach.StateMachine):
 							'side':'GRASP_SIDE', 
 							'failed':'failed'})
 			
-			smach.StateMachine.add('GRASP_SIDE', grasp_side(max_retries = 10),
+			smach.StateMachine.add('GRASP_SIDE', grasp_side(max_retries = 5),
 				transitions={'succeeded':'object_picked_side', 
 							'no_ik_solution':'DETECT_OBJECT', 		#no_ik_solution -> retry DETECT_OBJECT
 							'no_more_retries':'object_not_picked', 
 							'failed':'failed'})
 				
-			smach.StateMachine.add('GRASP_TOP', grasp_top(max_retries = 10),
+			smach.StateMachine.add('GRASP_TOP', grasp_top(max_retries = 5),
 				transitions={'succeeded':'object_picked_top', 
 							'no_ik_solution':'DETECT_OBJECT', 
 							'no_more_retries':'object_not_picked', 
