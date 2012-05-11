@@ -10,7 +10,7 @@
 	<include file="$(find cob_experimentation_days)/launch/experimentation_days.launch"/>
 
 	<!-- start navigation -->
-	<include file="$(find cob_2dnav)/ros/launch/2dnav_ipa.launch"/>
+	<include file="$(find cob_navigation_global)/launch/2dnav_ros_dwa.launch"/>
 
 	<!-- start object detection -->
 	<machine name="pc2" address="cob3-3-pc2" default="true"/>
