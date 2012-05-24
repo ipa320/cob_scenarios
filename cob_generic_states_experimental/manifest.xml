@@ -15,6 +15,7 @@
   <depend package="tf"/>
   <depend package="kinematics_msgs"/>
   <depend package="cob_script_server"/>
+  <python path="${prefix}/states"/>
   <!-- <depend package="cob_object_detection_msgs"/>
   <depend package="cob_object_detection_fake"/> -->
 

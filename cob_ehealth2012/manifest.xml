@@ -1,0 +1,30 @@
+<package>
+  <description brief="cob_ehealth2012">
+
+     cob_ehealth2012
+
+  </description>
+  <author>Tobias Sing</author>
+  <license>LGPL</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/cob_ehealth2012</url>
+  <depend package="cob_generic_states_experimental"/>
+  <depend package="cob_generic_states"/>
+  <depend package="rospy"/>
+  <depend package="smach"/>
+  <depend package="cob_script_server"/>
+  <depend package="cob_command_gui"/>
+  <depend package="cob_default_robot_config"/>
+  <depend package="cob_default_env_config"/>
+  <depend package="cob_dashboard"/>
+  <depend package="cob_bringup"/>
+  <depend package="cob_bringup_sim"/>
+  <python path="${prefix}/states"/>
+  <!-- <depend package="cob_manipulator"/>
+  <depend package="cob_2dnav"/>
+  <depend package="cob_linear_nav"/>
+  <depend package="cob_object_detection_fake"/> -->
+
+</package>
+
+
