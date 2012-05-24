@@ -10,6 +10,6 @@ class Grasp(smach.State):
     def __init__(self):
         smach.State.__init__(self, 
                              outcomes=['grasped','not_grasped','failed'])
-#                             output_keys=['objectname'])
+                             input_keys=['object_name'])
     def execute(self, userdata):
         return 'grasped'
