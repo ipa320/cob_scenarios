@@ -9,6 +9,7 @@
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/ehealth2012</url>
   <depend package="cob_generic_states_experimental"/>
+  <depend package="cob_generic_states"/>
   <depend package="rospy"/>
   <depend package="smach"/>
   <depend package="cob_script_server"/>
@@ -18,10 +19,10 @@
   <depend package="cob_dashboard"/>
   <depend package="cob_bringup"/>
   <depend package="cob_bringup_sim"/>
-  <depend package="cob_manipulator"/>
+  <!-- <depend package="cob_manipulator"/>
   <depend package="cob_2dnav"/>
   <depend package="cob_linear_nav"/>
-  <depend package="cob_object_detection_fake"/>
+  <depend package="cob_object_detection_fake"/> -->
 
 </package>
 
