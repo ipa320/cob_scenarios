@@ -18,6 +18,7 @@ class SelectObjectFromKeyboard(smach.State):
             print str(i) + '  ' + proto_objects[i]
         objectID = ""
         while objectID not in [str(i) for i in range(len(proto_objects))]:
+            #objectID = "1" #FIXME hardcoded to milk for testing
             objectID = raw_input('Please select an object: ')
         print 'You selected #' + objectID
         objectID = int(objectID)
