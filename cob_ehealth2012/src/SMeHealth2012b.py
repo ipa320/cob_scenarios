@@ -29,11 +29,11 @@ class SMeHealth2012b(smach.StateMachine):
                                     'objectSelected':'MOVE_TO_PREGRASP_POSITION',
                                     'quit':'ended'
                                   })
-            smach.StateMachine.add('MOVE_TO_PREGRASP_POSITION', approach_pose([1,-0.5,3.14],mode="omni"),   
+            smach.StateMachine.add('MOVE_TO_PREGRASP_POSITION', approach_pose([1,-0.5,0],mode="omni"),   
                         transitions={'succeeded':'MOVE_TO_GRASP_POSITION', 
                                                 'failed':'failed'})
                                    
-            smach.StateMachine.add('MOVE_TO_GRASP_POSITION', approach_pose([1.5,-0.5,3.14],mode="linear"),
+            smach.StateMachine.add('MOVE_TO_GRASP_POSITION', approach_pose([0,-0.5,0],mode="linear"),
                         transitions={'succeeded':'DETECT_OBJECT', 
                                                 'failed':'failed'})
                                                 
@@ -51,8 +51,12 @@ class SMeHealth2012b(smach.StateMachine):
 
             smach.StateMachine.add('PUT_OBJECT_ON_TRAY', PutObjectOnTray(),
                                    transitions={
-                                    'succeeded':'DELIVER', 
+                                    'succeeded':'MOVE_TO_DELIVER_POSITION', 
                                     'failed':'failed'})
+
+            smach.StateMachine.add('MOVE_TO_DELIVER_POSITION', approach_pose([2,-1,-1.57],mode="omni"),   
+                        transitions={'succeeded':'DELIVER', 
+                                                'failed':'failed'})
 
             smach.StateMachine.add('DELIVER', deliver_object(),
                                    transitions={
