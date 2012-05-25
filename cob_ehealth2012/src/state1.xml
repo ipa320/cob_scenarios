@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<state name="blabla" description="blublub">
+
+<outcomes>
+  <outcome>succeeded</outcome>
+  <outcome>failure</outcome>
+</outcomes>
+
+<input_keys>
+  <input_key>foo_input</input_key>
+  <input_key>foo_input2</input_key>
+</input_keys>
+
+<tags>
+<tag>user_input</tag>
+</tags>
+
+
+<graph>
+<node name="BLA" state="BLUB"/>
+<node name="BLA1" state="BLUB"/>
+<edge from="BLA" via="OUTBLA1" to="BLA1"/>
+<edge from="BLA" via="OUTBLA2" to="BLA2"/>
+</graph>
+
+</state>

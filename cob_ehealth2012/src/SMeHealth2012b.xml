@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<state name="SMeHealth2012b" description="Top-level state machine implementing the scenario for the eHealth2012 industry fair.">
+
+<outcomes>
+  <outcome>ended</outcome>
+</outcomes>
+
+<graph>
+<node name="PREPAREROBOT" state="PrepareRobot"/>
+<node name="SELECTOBJECTFROMKEYBOARD" state="SelectObjectFromKeyboard"/>
+<edge from="PREPAREROBOT" via="succeeded" to="SELECTOBJECTFROMKEYBOARD"/>
+<edge from="SELECTOBJECTFROMKEYBOARD" via="objectSelected" to="ended"/>
+<edge from="SELECTOBJECTFROMKEYBOARD" via="quit" to="ended"/>
+</graph>
+
+<tags>
+<tag>scenario</tag>
+</tags>
+
+</state>
