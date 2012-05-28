@@ -229,6 +229,7 @@ class deliver_object(smach.State):
 			input_keys=['object_name'])
 
 	def execute(self, userdata):
+		sss.move("head","front",False)
 		sss.say(["Here is your " + userdata.object_name + ". Please help yourself."],False)
 		sss.move("torso","nod",False)
 		

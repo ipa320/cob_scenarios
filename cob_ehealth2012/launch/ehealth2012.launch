@@ -1,23 +1,40 @@
 <?xml version="1.0"?>
 <launch>
 
+	<arg name="pc1" default="$(env ROBOT)-pc1"/>
+	<arg name="pc2" default="$(env ROBOT)-pc2"/>
+	<arg name="pc3" default="$(env ROBOT)-pc3"/>
+
 	<!-- start manipulation -->
-	<!-- <include file="$(find cob_manipulator)/ros/launch/kdl_solver.launch"/>  -->
+	<include file="$(find cob_manipulator)/ros/launch/kdl_solver.launch"/>
+	
+	<include file="$(find cob_tray_sensors)/ros/launch/tray_sensors.launch"/>
 
 	<!-- upload default parameters -->
-	<include file="$(find cob_default_robot_config)/$(env ROBOT)/upload_param_$(env ROBOT).launch"/>
+	<include file="$(find cob_default_robot_config)/upload_param.launch"/>
 	<include file="$(find cob_default_env_config)/upload_param.launch"/>
 	
 	<!-- upload cob_experimentation_days parameters -->
 	<!-- <include file="$(find cob_experimentation_days)/config/upload_param.launch"/> -->
 	<!-- <include file="$(find cob_experimentation_days)/config/upload_param.launch"/> -->
+	<!-- send ROBOT parameters to parameter server -->
+    <rosparam command="load" ns="/script_server/base" file="$(find cob_ehealth2012)/config/$(env ROBOT_ENV)/navigation_goals.yaml"/>
+	<!--rosparam command="load" ns="/script_server/arm" file="$(find cob_ehealth2012)/config/$(env ROBOT)/arm_joint_configurations.yaml"/-->
+
+
 	
 	<!-- start navigation -->
-        <include file="$(find cob_navigation_global)/launch/2dnav_ros_dwa.launch"/> 
-        <include file="$(find cob_navigation_global)/launch/2dnav_linear.xml"/>   
+    <include file="$(find cob_navigation_global)/launch/2dnav_ros_dwa.launch"/> 
+    <include file="$(find cob_navigation_global)/launch/2dnav_linear.xml"/>
+       
+	<group>
+		<machine name="pc3" address="$(arg pc3)" default="true"/>
+		
+		<include file="$(find cob_sensor_fusion)/ros/launch/sensor_fusion_stereo.launch" />
+		<include file="$(find cob_object_detection)/ros/launch/object_detection.launch" />
+	</group>
+
+	<machine name="pc1" address="$(arg pc1)" default="true"/>
 
 
-	<!-- send ROBOT parameters to parameter server -->
-        <rosparam command="load" ns="/script_server/base" file="$(find ehealth2012)/config/$(env ROBOT_ENV)/navigation_goals.yaml"/>
-	<!--rosparam command="load" ns="/script_server/arm" file="$(find ehealth2012)/config/$(env ROBOT)/arm_joint_configurations.yaml"/-->
 </launch>
