@@ -76,19 +76,26 @@ class approach_pose(smach.State):
 			outcomes=['succeeded', 'failed'],
 			input_keys=['base_pose'])
 
+		# Subscriber to base_odometry
+		rospy.Subscriber("/base_controller/odometry", Odometry, self.callback)
+
 		self.pose = pose
 		self.mode = mode
 		self.move_second = move_second
 		self.is_moving = False
 
+	#Callback for the /base_controller/odometry subscriber
+	def callback(self,msg):
+		r = 0.01 # m/s or rad/s
+		if (abs(msg.twist.twist.linear.x) > r) or (abs(msg.twist.twist.linear.y) > r) or (abs(msg.twist.twist.angular.z) > r): 
+			self.is_moving = True
+		else:
+			self.is_moving = False
+		return 
+		#rospy.loginfo("/base_controller/odometry is publishing a message")
 
 
 	def execute(self, userdata):
-
-		#Callback for the /base_controller/odometry subscriber
-		def callback(data):
-			self.is_moving = True
-			#rospy.loginfo("/base_controller/odometry is publishing a message")
 
 		# determine target position
 		if self.pose != "":
@@ -107,7 +114,6 @@ class approach_pose(smach.State):
 		# try reaching pose
 		handle_base = sss.move("base", pose, mode=self.mode, blocking=False)
 		move_second = self.move_second
-		is_moving = self.is_moving
 
 		timeout = 0
 		while True:
@@ -117,12 +123,9 @@ class approach_pose(smach.State):
 				move_second = True
 			elif (handle_base.get_state() == 3) and (move_second):
 				return 'succeeded'			
-
-			# Subscriber to base_odometry
-			rospy.Subscriber("/base_controller/odometry", Odometry, callback)
 	
-			#Check if the base is moving , with a subcriber to the topic /base_controller/odometry
-			if not is_moving: # robot stands still
+			#Check if the base is moving
+			if not self.is_moving: # robot stands still
 				if timeout > 10:
 					sss.say(["I can not reach my target position because my path or target is blocked"],False)
 					timeout = 0

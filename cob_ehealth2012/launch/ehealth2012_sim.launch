@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<launch>
+
+	<!-- start ehealth components -->
+	<include file="$(find cob_ehealth2012)/launch/ehealth2012.launch">
+		<arg name="pc1" value="localhost"/>
+		<arg name="pc2" value="localhost"/>
+		<arg name="pc3" value="localhost"/>
+	</include>
+
+</launch>

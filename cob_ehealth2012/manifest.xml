@@ -1,13 +1,14 @@
 <package>
-  <description brief="cob_experimentation_days">
+  <description brief="cob_ehealth2012">
 
-     cob_experimentation_days
+     cob_ehealth2012
 
   </description>
-  <author>Florian Weisshardt</author>
+  <author>Tobias Sing</author>
   <license>LGPL</license>
   <review status="unreviewed" notes=""/>
-  <url>http://ros.org/wiki/cob_experimentation_days</url>
+  <url>http://ros.org/wiki/cob_ehealth2012</url>
+  <depend package="cob_generic_states_experimental"/>
   <depend package="cob_generic_states"/>
   <depend package="rospy"/>
   <depend package="smach"/>
@@ -18,11 +19,12 @@
   <depend package="cob_dashboard"/>
   <depend package="cob_bringup"/>
   <depend package="cob_bringup_sim"/>
-  <depend package="cob_manipulator"/>
   <depend package="cob_navigation_global"/>
-  <depend package="cob_object_detection_fake"/>
+  <depend package="cob_manipulator"/>
+  <depend package="cob_object_detection"/>
+  <depend package="cob_sensor_fusion"/>
+  <depend package="cob_tray_sensors"/>
 
+  <python path="${prefix}/states"/>
 
 </package>
-
-

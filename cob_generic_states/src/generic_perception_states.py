@@ -111,7 +111,7 @@ class detect_object(smach.State):
 			self.retries = 0
 			handle_torso = sss.move("torso","home",False)
 			handle_torso.wait()
-			handle_arm = sss.move("arm","look_at_table-to-folded",False)
+			handle_arm = sss.move("arm","look_at_table-to-folded")
 			return 'no_more_retries'
 		
 		# move sdh as feedback
@@ -181,6 +181,7 @@ class detect_object(smach.State):
 			return 'no_object'
 
 		# we succeeded to detect an object
+		sss.move("torso","home")
 		userdata.object = obj
 		self.retries = 0
 		return 'succeeded'
