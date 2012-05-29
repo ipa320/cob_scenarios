@@ -315,15 +315,16 @@ class grasp_side_planned(smach.State):
 
 		# execute grasp
 		sss.say(["I am grasping the " + userdata.object.label + " now."],False)
-		sss.move("torso","front")
-		handle_arm = sss.move("arm", [pre_grasp_conf , grasp_conf],False)
-		sss.move("sdh", "cylopen")
+		#handle_arm = sss.move("arm", [pre_grasp_conf , grasp_conf],False)
+		handle_arm = sss.move_joint_goal_planned("arm", [pre_grasp_js.positions],False)
+		sss.move("sdh", "spheropen")
 		handle_arm.wait()
-		sss.move("sdh", "cylclosed")
+		handle_arm = sss.move("arm", [grasp_js.positions]) # TODO: use interpolated IK
+		sss.move("sdh", "spherclosed")
 	
-		# move object to hold position
+		# move object to frontside and put object on tray
 		sss.move("head","front",False)
-		sss.move("arm", [post_grasp_conf, "hold"])
+		sss.move("arm", [post_grasp_js.positions, "hold"])
 		
 		self.retries = 0
 		return 'succeeded'
@@ -425,16 +426,14 @@ class grasp_top(smach.State):
 		# execute grasp
 		sss.say(["I am grasping the " + userdata.object.label + " now."],False)
 		sss.move("torso","home")
-		#handle_arm = sss.move("arm", [pre_grasp_conf , grasp_conf],False)
-		handle_arm = sss.move_joint_goal_planned("arm", [pre_grasp_js.positions],False)
+		handle_arm = sss.move("arm", [pre_grasp_conf , grasp_conf],False)
 		sss.move("sdh", "spheropen")
 		handle_arm.wait()
-		handle_arm = sss.move("arm", [grasp_js.positions]) # TODO: use interpolated IK
 		sss.move("sdh", "spherclosed")
 	
 		# move object to frontside and put object on tray
 		sss.move("head","front",False)
-		sss.move("arm", [post_grasp_js.positions, "hold"]) # TODO: use interpolated IK
+		sss.move("arm", [post_grasp_conf, "hold"])
 		
 		self.retries = 0
 		return 'succeeded'
