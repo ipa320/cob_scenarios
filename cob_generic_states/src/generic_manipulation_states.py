@@ -249,13 +249,16 @@ class grasp_side_planned(smach.State):
 			print "Service call failed: %s"%e
 			self.retries = 0
 			return 'failed'
+			
+		#print userdata.object
+		#return 'failed'
 	
 		# transform object_pose to middle
 		object_pose_in = userdata.object.pose
-		object_pose_in.header.stamp = self.listener.getLatestCommonTime("/base_link",object_pose_in.header.frame_id)
-		object_pose_in.pose.position.x += userdata.object.bounding_box.x/2.0
-		object_pose_in.pose.position.y += userdata.object.bounding_box.y/2.0
-		object_pose_in.pose.position.z += userdata.object.bounding_box.z/2.0
+		#object_pose_in.header.stamp = self.listener.getLatestCommonTime("/base_link",object_pose_in.header.frame_id)
+		#object_pose_in.pose.position.x += userdata.object.bounding_box_lwh.x/2.0
+		#object_pose_in.pose.position.y += userdata.object.bounding_box_lwh.y/2.0
+		object_pose_in.pose.position.z += userdata.object.bounding_box_lwh.z/2.0
 		
 		
 		req = GetPoseStampedTransformedRequest()
