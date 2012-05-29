@@ -230,7 +230,7 @@ class grasp_side_planned(smach.State):
 		
 		self.max_retries = max_retries
 		self.retries = 0
-		self.transformer = rospy.ServiceProxy('/arm_kinematics/get_ik', GetPositionIK)
+		self.transformer = rospy.ServiceProxy('/cob_pose_transform/get_pose_stamped_transformed', GetPoseStampedTransformed)
 		self.stiffness = rospy.ServiceProxy('/arm_controller/set_joint_stiffness', SetJointStiffness)
 
 	def execute(self, userdata):
