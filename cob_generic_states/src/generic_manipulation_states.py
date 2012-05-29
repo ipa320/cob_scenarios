@@ -114,7 +114,7 @@ class grasp_side(smach.State):
 	def __init__(self, max_retries = 1):
 		smach.State.__init__(
 			self,
-			outcomes=['succeeded', 'no_ik_solution', 'no_more_retries', 'failed'],
+			outcomes=['grasped','not_grasped', 'failed'],
 			input_keys=['object'])
 		
 		self.max_retries = max_retries
@@ -141,7 +141,7 @@ class grasp_side(smach.State):
 			handle_torso = sss.move("torso","home",False)
 			handle_torso.wait()
 			handle_arm = sss.move("arm","look_at_table-to-folded",False)
-			return 'no_more_retries'
+			return 'not_grasped'
 	
 		# make arm soft TODO: handle stiffness for schunk arm
 		try:
@@ -185,21 +185,21 @@ class grasp_side(smach.State):
 		if(error_code.val != error_code.SUCCESS):
 			rospy.logerr("Ik pre_grasp Failed")
 			self.retries += 1
-			return 'no_ik_solution'
+			return 'not_grasped'
 		
 		# calculate ik solutions for grasp configuration
 		(grasp_conf, error_code) = self.callIKSolver(pre_grasp_conf, object_pose_bl)
 		if(error_code.val != error_code.SUCCESS):
 			rospy.logerr("Ik grasp Failed")
 			self.retries += 1
-			return 'no_ik_solution'
+			return 'not_grasped'
 		
 		# calculate ik solutions for pre grasp configuration
 		(post_grasp_conf, error_code) = self.callIKSolver(grasp_conf, post_grasp_bl)
 		if(error_code.val != error_code.SUCCESS):
 			rospy.logerr("Ik post_grasp Failed")
 			self.retries += 1
-			return 'no_ik_solution'	
+			return 'not_grasped'
 
 		# execute grasp
 		sss.say(["I am grasping the " + userdata.object.label + " now."],False)
@@ -214,7 +214,7 @@ class grasp_side(smach.State):
 		sss.move("arm", [post_grasp_conf, "hold"])
 		
 		self.retries = 0
-		return 'succeeded'
+		return 'grasped'
 
 
 ## Grasp side state with planned arm movements
@@ -225,7 +225,7 @@ class grasp_side_planned(smach.State):
 	def __init__(self, max_retries = 1):
 		smach.State.__init__(
 			self,
-			outcomes=['succeeded', 'no_ik_solution', 'no_more_retries', 'failed'],
+			outcomes=['grasped','not_grasped', 'failed'],
 			input_keys=['object'])
 		
 		self.max_retries = max_retries
@@ -240,7 +240,7 @@ class grasp_side_planned(smach.State):
 			handle_torso = sss.move("torso","home",False)
 			handle_torso.wait()
 			handle_arm = sss.move("arm","look_at_table-to-folded",False)
-			return 'no_more_retries'
+			return 'not_grasped'
 	
 		# make arm soft TODO: handle stiffness for schunk arm
 		try:
@@ -300,21 +300,21 @@ class grasp_side_planned(smach.State):
 		if(error_code.val != error_code.SUCCESS):
 			rospy.logerr("Ik pre_grasp Failed")
 			self.retries += 1
-			return 'no_ik_solution'
+			return 'not_grasped'
 		
 		# calculate ik solutions for grasp configuration
 		grasp_js, error_code = sss.calculate_ik(object_pose_bl, pre_grasp_js)
 		if(error_code.val != error_code.SUCCESS):
 			rospy.logerr("Ik grasp Failed")
 			self.retries += 1
-			return 'no_ik_solution'
+			return 'not_grasped'
 		
 		# calculate ik solutions for pre grasp configuration
 		post_grasp_js, error_code = sss.calculate_ik(post_grasp_bl, grasp_js)
 		if(error_code.val != error_code.SUCCESS):
 			rospy.logerr("Ik post_grasp Failed")
 			self.retries += 1
-			return 'no_ik_solution'	
+			return 'not_grasped'
 
 		# execute grasp
 		sss.say(["I am grasping the " + userdata.object.label + " now."],False)
@@ -330,7 +330,7 @@ class grasp_side_planned(smach.State):
 		sss.move("arm", [post_grasp_js.positions, "hold"])
 		
 		self.retries = 0
-		return 'succeeded'
+		return 'grasped'
 		
 ## Grasp top state
 #
