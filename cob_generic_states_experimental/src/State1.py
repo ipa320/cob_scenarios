@@ -4,17 +4,17 @@ import rospy
 import smach
 import smach_ros
 import time
-#from simple_script_server import *  # import script
-#sss = simple_script_server()
+from simple_script_server import *  # import script
+sss = simple_script_server()
 
 class State1(smach.State):
-	def __init__(self):
-		smach.State.__init__(self, 
-			outcomes=['succeeded'],
-			input_keys=['object_name'])
-		print "entering state1"
-	def execute(self, userdata):
-		while True:
-			print 'hallo'
-			time.sleep(0.5)		
-		return 'succeeded'
+  def __init__(self, val):
+    smach.State.__init__(self, 
+      outcomes=['succeeded'], input_keys=['object_name'])
+    self._val = val
+  print "entering state1"
+  def execute(self, ud):
+    while 'object_name' not in ud:
+      print self._val
+      rospy.sleep(0.5)		
+    return 'succeeded'

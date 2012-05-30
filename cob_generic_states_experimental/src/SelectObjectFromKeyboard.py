@@ -3,15 +3,15 @@ roslib.load_manifest('cob_generic_states_experimental')
 import rospy
 import smach
 import smach_ros
-from simple_script_server import *  # import script
-sss = simple_script_server()
+##from simple_script_server import *  # import script
+##sss = simple_script_server()
 
 class SelectObjectFromKeyboard(smach.State):
     def __init__(self):
         smach.State.__init__(self, 
                              outcomes=['objectSelected','quit'],
                              output_keys=['object_name'])
-    def execute(self, userdata):
+    def execute(self, ud):
         proto_objects = ['quit', 'milk', 'salt', 'tomato_sauce', 'tomato_soup', 'zwieback']
         print 'Please select an object:'
         for i in range(len(proto_objects)):
@@ -26,5 +26,5 @@ class SelectObjectFromKeyboard(smach.State):
             print 'Quit.'
             return 'quit'
         else:
-            userdata.object_name = proto_objects[ objectID ] 
+            ud.object_name = proto_objects[ objectID ] 
             return 'objectSelected'
