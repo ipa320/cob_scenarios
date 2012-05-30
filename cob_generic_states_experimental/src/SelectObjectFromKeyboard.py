@@ -11,7 +11,7 @@ class SelectObjectFromKeyboard(smach.State):
         smach.State.__init__(self, 
                              outcomes=['objectSelected','quit'],
                              output_keys=['object_name'])
-    def execute(self, ud):
+    def execute(self, userdata):
         proto_objects = ['quit', 'milk', 'salt', 'tomato_sauce', 'tomato_soup', 'zwieback']
         print 'Please select an object:'
         for i in range(len(proto_objects)):
@@ -24,7 +24,8 @@ class SelectObjectFromKeyboard(smach.State):
         objectID = int(objectID)
         if objectID==0:
             print 'Quit.'
+            userdata.object_name = "quit"
             return 'quit'
         else:
-            ud.object_name = proto_objects[ objectID ] 
+            userdata.object_name = proto_objects[ objectID ] 
             return 'objectSelected'

@@ -1,6 +1,6 @@
 #!/usr/bin/python
 import roslib
-roslib.load_manifest('cob_ehealth2012')   # todo: additional command line parameter
+roslib.load_manifest('cob_generic_states_experimental')   # todo: additional command line parameter
 import rospy
 import smach
 import smach_ros
@@ -19,10 +19,10 @@ from KeepMoving import *
 
 class SM(smach.Concurrence):
     def __init__(self):
-        smach.Concurrence.__init__(self, outcomes=['ended','aborted'],default_outcome='aborted',outcome_map={'ended':{'STATE2':'objectSelected'}})
+        smach.Concurrence.__init__(self, outcomes=['objectSelected','quit'],default_outcome='quit',outcome_map={'objectSelected':{'SelectObjectFromKeyboard':'objectSelected'}})
         with self:
-            smach.Concurrence.add('STATE1', KeepMoving())
-            smach.Concurrence.add('STATE2',SelectObjectFromKeyboard())
+            smach.Concurrence.add('KeepMoving', KeepMoving())
+            smach.Concurrence.add('SelectObjectFromKeyboard',SelectObjectFromKeyboard())
  
 rospy.init_node('eHealth2012')
 sm = SM()
