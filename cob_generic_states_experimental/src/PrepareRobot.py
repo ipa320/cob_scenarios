@@ -15,18 +15,19 @@ class PrepareRobot(smach.State):
         sss.say(["Preparing."],False)
         
         # bring robot into the starting state
-        handle_tray = sss.move("tray","down",False)
+        handle_tray = sss.move("tray","up")
         handle_torso = sss.move("torso","home",False)
         handle_arm = sss.move("arm","folded",False)
         handle_sdh = sss.move("sdh","cylclosed",False)
         handle_head = sss.move("head","front",False)
         
         # wait for all movements to be finished
-        handle_tray.wait()
         handle_torso.wait()
         handle_arm.wait()
         handle_sdh.wait()
         handle_head.wait()
+        
+        #handle_tray = sss.move("tray","down")
         
         # announce ready
         sss.say(["Ready."])
