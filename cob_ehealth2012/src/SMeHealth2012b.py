@@ -8,6 +8,7 @@ import smach_ros
 from generic_basic_states import *
 from generic_navigation_states import *
 from generic_perception_states import *
+from generic_manipulation_states import *
 
 from simple_script_server import *  # import script
 
@@ -33,7 +34,7 @@ class SMeHealth2012b(smach.StateMachine):
                         transitions={'succeeded':'MOVE_TO_GRASP_POSITION', 
                                                 'failed':'failed'})
                                    
-            smach.StateMachine.add('MOVE_TO_GRASP_POSITION', approach_pose([0,-0.5,0],mode="linear"),
+            smach.StateMachine.add('MOVE_TO_GRASP_POSITION', approach_pose([0,-0.5,0],mode="omni"),
                         transitions={'succeeded':'DETECT_OBJECT', 
                                                 'failed':'failed'})
                                                 
@@ -43,7 +44,7 @@ class SMeHealth2012b(smach.StateMachine):
                                                 'no_more_retries':'SELECT_OBJECT_FROM_KEYBOARD', # object_not_picked
                                                 'failed':'failed'})  # failed
 
-            smach.StateMachine.add('GRASP', Grasp(),
+            smach.StateMachine.add('GRASP', grasp_side_planned(),
                                    transitions={
                                     'grasped':'PUT_OBJECT_ON_TRAY',
                                     'not_grasped':'ended', 
