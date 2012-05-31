@@ -23,11 +23,12 @@ class KeepMovingUntilObjectSelected(smach.Concurrence):
             self,
             outcomes=['objectSelected','quit'],
             default_outcome='quit',
+            output_keys=['object_name'],
             outcome_map={'objectSelected':{'SelectObjectFromKeyboard':'objectSelected'},
                          'quit':{'SelectObjectFromKeyboard':'quit'}})
         with self:
             smach.Concurrence.add('KeepMoving', KeepMoving())
-            smach.Concurrence.add('SelectObjectFromKeyboard',SelectObjectFromKeyboard())
+            smach.Concurrence.add('SelectObjectFromKeyboard',SelectObjectFromKeyboard(), remapping={'object_name':'object_name'})
  
 #rospy.init_node('eHealth2012')
 #sm = SM()

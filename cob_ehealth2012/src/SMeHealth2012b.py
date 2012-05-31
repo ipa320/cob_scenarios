@@ -32,15 +32,15 @@ class SMeHealth2012b(smach.StateMachine):
                                                 'failed':'failed'})
                                    
             smach.StateMachine.add('MOVE_TO_GRASP_POSITION', approach_pose([0,-0.5,0],mode="linear"),
-                        transitions={'succeeded':'ended',   # DETECT_OBJECT
+                        transitions={'succeeded':'DETECT_OBJECT',
                                                 'failed':'failed'})
-'''                                                
+                                               
             smach.StateMachine.add('DETECT_OBJECT', detect_object(max_retries = 5),
-                        transitions={'succeeded':'GRASP', 
+                        transitions={'succeeded':'GRASP',
                                                 'no_object':'DETECT_OBJECT',    #no_object -> retry DETECT_OBJECT
-                                                'no_more_retries':'SELECT_OBJECT_FROM_KEYBOARD', # object_not_picked
-                                                'failed':'failed'})  # failed
-
+                                                'no_more_retries':'PREPARE_ROBOT', 
+                                                'failed':'failed'})  
+                                                
             smach.StateMachine.add('GRASP', Grasp(),
                                    transitions={
                                     'grasped':'PUT_OBJECT_ON_TRAY',
@@ -58,7 +58,8 @@ class SMeHealth2012b(smach.StateMachine):
 
             smach.StateMachine.add('DELIVER', deliver_object(),
                                    transitions={
-                                    'succeeded':'SELECT_OBJECT_FROM_KEYBOARD',
+                                    'succeeded':'PREPARE_ROBOT',
                                     'retry':'DELIVER',
                                     'failed':'failed'})
-'''
+                                    
+                                    
