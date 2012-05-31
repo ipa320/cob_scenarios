@@ -24,6 +24,8 @@
   <depend package="cob_object_detection"/>
   <depend package="cob_sensor_fusion"/>
   <depend package="cob_tray_sensors"/>
+  
+  <depend package="raw_exhibition"/>
 
   <python path="${prefix}/states"/>
 

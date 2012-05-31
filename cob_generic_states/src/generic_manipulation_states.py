@@ -157,7 +157,7 @@ class grasp_side(smach.State):
 		object_pose_in.header.stamp = self.listener.getLatestCommonTime("/base_link",object_pose_in.header.frame_id)
 		object_pose_bl = self.listener.transformPose("/base_link", object_pose_in)
 	
-		[new_x, new_y, new_z, new_w] = tf.transformations.quaternion_from_euler(-1.552, -0.042, 2.481) # rpy 
+		[new_x, new_y, new_z, new_w] = tf.transformations.quaternion_from_euler(-1.5708, 0, 2.481) # rpy 
 		object_pose_bl.pose.orientation.x = new_x
 		object_pose_bl.pose.orientation.y = new_y
 		object_pose_bl.pose.orientation.z = new_z
@@ -338,8 +338,7 @@ class grasp_side_planned(smach.State):
 	
 		# move object to frontside and put object on tray
 		sss.move("head","front",False)
-		handle_arm = sss.move("arm", [list(post_grasp_js.position)]) # TODO: use interpolated IK
-		sss.move_planned("arm", "hold")
+		handle_arm = sss.move("arm", [list(post_grasp_js.position),'hold']) # TODO: use interpolated IK
 		
 		self.retries = 0
 		return 'grasped'

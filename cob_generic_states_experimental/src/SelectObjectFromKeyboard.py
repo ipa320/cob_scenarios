@@ -12,7 +12,7 @@ class SelectObjectFromKeyboard(smach.State):
                              outcomes=['objectSelected','quit'],
                              output_keys=['object_name'])
     def execute(self, userdata):
-        proto_objects = ['quit', 'milk', 'salt', 'tomato_sauce', 'tomato_soup', 'zwieback']
+        proto_objects = ['quit', 'milk', 'HohesC', 'Fanta','Pringles','salt', 'tomato_sauce', 'tomato_soup', 'zwieback']
         print 'Please select an object:'
         for i in range(len(proto_objects)):
             print str(i) + '  ' + proto_objects[i]

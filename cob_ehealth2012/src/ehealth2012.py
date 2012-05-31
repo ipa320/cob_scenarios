@@ -12,7 +12,7 @@ sss = simple_script_server()
 #from SMeHealth2012b import *
 
 def main():
-    rospy.init_node('ehealth2012')
+    rospy.init_node('AUTOMATICA2012')
     #sm = smach.StateMachine(outcomes=['ended'])
     #with sm:
     #    smach.StateMachine.add('FOO', HierSM1(),
@@ -20,7 +20,7 @@ def main():
     
     sm = SMeHealth2012b()
 
-    sis = smach_ros.IntrospectionServer('server_name', sm, '/SM_ROOT')
+    sis = smach_ros.IntrospectionServer('AUTOMATICA2012', sm, 'AUTOMATICA2012')
     sis.start()
 
     outcome = sm.execute()
