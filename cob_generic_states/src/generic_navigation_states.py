@@ -112,6 +112,7 @@ class approach_pose(smach.State):
 			return 'failed'
 
 		# try reaching pose
+		sss.set_light('yellow')
 		handle_base = sss.move("base", pose, mode=self.mode, blocking=False)
 		move_second = self.move_second
 
@@ -122,7 +123,10 @@ class approach_pose(smach.State):
 				handle_base = sss.move("base", pose, mode=self.mode, blocking=False)
 				move_second = True
 			elif (handle_base.get_state() == 3) and (move_second):
-				return 'succeeded'			
+				return 'succeeded'		
+			elif (handle_base.get_state() == 4):	
+				sss.set_light('red')
+				return 'failed'		
 	
 			#Check if the base is moving
 			if not self.is_moving: # robot stands still

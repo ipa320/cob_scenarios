@@ -50,20 +50,25 @@ class PutObjectOnTray(smach.State):
 		if not res.success:
 			print "Service call failed"
 			self.retries = 0
+			sss.set_light('red')
 			return 'failed'
 			
 		seed_js = JointState()
 		seed_js.name = rospy.get_param("/arm_controller/joint_names")
 		seed_js.position = rospy.get_param("/script_server/arm/intermediatefront")[0]
 
+		sss.set_light('blue')
 		# calculate ik solutions for grasp configuration
 		pos_js, error_code = sss.calculate_ik(res.result, seed_js)
 		if(error_code.val != error_code.SUCCESS):
+			if error_code.val != error_code.NO_IK_SOLUTION:
+				sss.set_light('red')
 			rospy.logerr("Ik Failed")
 			return 'failed'
 
+		sss.set_light('yellow')
 		sss.move("head","front",False)
-		handle_arm = sss.move("arm", ['intermediateback', 'intermediatefront',list(pos_js.position)])
+		handle_arm = sss.move("arm", ['intermediateback', 'intermediatefront',list(pos_js.position)],False)
 
 		sss.sleep(2)
 		sss.move("tray","up")

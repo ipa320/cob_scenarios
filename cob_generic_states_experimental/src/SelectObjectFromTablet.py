@@ -12,14 +12,9 @@ class SelectObjectFromTablet(smach.State):
     def __init__(self):
         smach.State.__init__(self, 
                              outcomes=['objectSelected','quit'],
-                             output_keys=['object_name'])
+                             output_keys=['object_name','concurrent_stop'])
         rospy.Service('/trigger_new_order', Order, self.order_cb)
-        rospy.Service('/trigger_new_task', TriggerTask, self.task_cb)
         self.ordered_object_ids = []
-
-    def task_cb(self,req):
-        print "trigger new task not implemented"
-        return TriggerTaskResponse()
 
     def order_cb(self,req):
         print "ordered_object_ids"
@@ -27,12 +22,13 @@ class SelectObjectFromTablet(smach.State):
         
         self.ordered_object_ids = req.ordered_object_ids
         
-        res = OrderResponse
+        res = OrderResponse()
         res.success = True
         return res
                              
     def execute(self, userdata):
-        proto_objects = ['quit', 'milk', 'salt', 'tomato_sauce', 'tomato_soup', 'zwieback']
+        # proto_objects = ['quit', 'milk', 'salt', 'tomato_sauce', 'tomato_soup', 'zwieback']
+        proto_objects = ['pringles', 'tomatosauce', 'chocolate', 'juice', 'fanta']
         print 'Please select an object on tablet gui'
         for i in range(len(proto_objects)):
             print str(i) + '  ' + proto_objects[i]
@@ -43,6 +39,8 @@ class SelectObjectFromTablet(smach.State):
         #    objectID = raw_input('Please select an object: ')
         #print 'You selected #' + objectID
         
+        userdata.concurrent_stop = False
+        
         while len(self.ordered_object_ids) == 0 and not rospy.is_shutdown():
             rospy.sleep(1)
         
@@ -52,9 +50,11 @@ class SelectObjectFromTablet(smach.State):
         
         print 'You selected #' + str(objectID)
         
-        if objectID==0:
+        if objectID==10:
             print 'Quit.'
             return 'quit'
         else:
             userdata.object_name = proto_objects[ objectID ]
+            userdata.concurrent_stop = True
+            sss.say(["You ordered " + proto_objects[ objectID ] + "."],False)
             return 'objectSelected'

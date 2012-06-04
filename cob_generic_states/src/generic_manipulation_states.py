@@ -65,6 +65,7 @@ import copy
 
 from simple_script_server import *
 sss = simple_script_server()
+import sys
 
 import tf
 from kinematics_msgs.srv import *
@@ -233,10 +234,12 @@ class grasp_side_planned(smach.State):
 		self.retries = 0
 		self.transformer = rospy.ServiceProxy('/cob_pose_transform/get_pose_stamped_transformed', GetPoseStampedTransformed)
 		self.stiffness = rospy.ServiceProxy('/arm_controller/set_joint_stiffness', SetJointStiffness)
+		self.grasped = rospy.ServiceProxy('/sdh_controller/is_cylindric_grasped', Trigger)
 
 	def execute(self, userdata):
 		# check if maximum retries reached
 		if self.retries > self.max_retries:
+			sss.set_light('yellow')
 			self.retries = 0
 			handle_torso = sss.move("torso","home",False)
 			handle_torso.wait()
@@ -249,6 +252,7 @@ class grasp_side_planned(smach.State):
 		except rospy.ServiceException, e:
 			print "Service call failed: %s"%e
 			self.retries = 0
+			sss.set_light('red')
 			return 'failed'
 			
 		#print userdata.object
@@ -256,6 +260,7 @@ class grasp_side_planned(smach.State):
 	
 		# transform object_pose to middle
 		object_pose_in = userdata.object.pose
+		print object_pose_in
 		#object_pose_in.header.stamp = self.listener.getLatestCommonTime("/base_link",object_pose_in.header.frame_id)
 		#object_pose_in.pose.position.x += userdata.object.bounding_box_lwh.x/2.0
 		#object_pose_in.pose.position.y += userdata.object.bounding_box_lwh.y/2.0
@@ -277,7 +282,8 @@ class grasp_side_planned(smach.State):
 		
 		res = self.transformer(req)
 		if not res.success:
-			print "Service call failed"
+			print "Service call GetPoseStampedTransformed failed", sys.exc_info()
+			sss.set_light('red')
 			self.retries = 0
 			return 'failed'
 		
@@ -302,13 +308,17 @@ class grasp_side_planned(smach.State):
 		pre_grasp_bl.pose.position.z = pre_grasp_bl.pose.position.z + 0.2 # z offset for pre grasp position
 		post_grasp_bl.pose.position.x = post_grasp_bl.pose.position.x + 0.05 # x offset for post grasp position
 		post_grasp_bl.pose.position.z = post_grasp_bl.pose.position.z + 0.17 # z offset for post grasp position
-		
+
+		sss.set_light('blue')
+	
 		# calculate ik solutions for pre grasp configuration
 		seed_js = JointState()
 		seed_js.name = rospy.get_param("/arm_controller/joint_names")
 		seed_js.position = rospy.get_param("/script_server/arm/pregrasp")[0]
 		pre_grasp_js, error_code = sss.calculate_ik(pre_grasp_bl,seed_js)
 		if(error_code.val != error_code.SUCCESS):
+			if error_code.val != error_code.NO_IK_SOLUTION:
+				sss.set_light('red')
 			rospy.logerr("Ik pre_grasp Failed")
 			self.retries += 1
 			return 'not_grasped'
@@ -316,6 +326,8 @@ class grasp_side_planned(smach.State):
 		# calculate ik solutions for grasp configuration
 		grasp_js, error_code = sss.calculate_ik(object_pose_bl, pre_grasp_js)
 		if(error_code.val != error_code.SUCCESS):
+			if error_code.val != error_code.NO_IK_SOLUTION:
+				sss.set_light('red')
 			rospy.logerr("Ik grasp Failed")
 			self.retries += 1
 			return 'not_grasped'
@@ -323,25 +335,34 @@ class grasp_side_planned(smach.State):
 		# calculate ik solutions for pre grasp configuration
 		post_grasp_js, error_code = sss.calculate_ik(post_grasp_bl, grasp_js)
 		if(error_code.val != error_code.SUCCESS):
+			if error_code.val != error_code.NO_IK_SOLUTION:
+				sss.set_light('red')
 			rospy.logerr("Ik post_grasp Failed")
 			self.retries += 1
 			return 'not_grasped'
 
 		# execute grasp
+		sss.set_light('yellow')
 		sss.say(["I am grasping the " + userdata.object.label + " now."],False)
 		#handle_arm = sss.move("arm", [pre_grasp_conf , grasp_conf],False)
 		handle_arm = sss.move_planned("arm", [list(pre_grasp_js.position)],False)
-		sss.move("sdh", "cylopen")
+		sss.move("sdh", "cylopen",False)
 		handle_arm.wait()
 		handle_arm = sss.move("arm", [list(grasp_js.position)]) # TODO: use interpolated IK
 		sss.move("sdh", "cylclosed")
 	
 		# move object to frontside and put object on tray
 		sss.move("head","front",False)
-		handle_arm = sss.move("arm", [list(post_grasp_js.position),'hold']) # TODO: use interpolated IK
+		sss.move("torso","front")
+		handle_arm = sss.move("arm", [list(post_grasp_js.position)]) # TODO: use interpolated IK
+		handle_arm = sss.move("arm", 'hold')
 		
 		self.retries = 0
-		return 'grasped'
+		if self.grasped().success.data:
+			return 'grasped'
+		else:
+			sss.say(["I could not grasp " + userdata.object.label],False)
+			return 'not_grasped'
 		
 ## Grasp top state
 #

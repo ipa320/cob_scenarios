@@ -5,7 +5,7 @@ roslib.load_manifest('cob_ehealth2012')
 import rospy
 import smach
 import smach_ros
-from SMeHealth2012b import *
+from SMeHealth2012c import *
 from simple_script_server import *  # import script
 sss = simple_script_server()
 
@@ -18,7 +18,7 @@ def main():
     #    smach.StateMachine.add('FOO', HierSM1(),
     #                          transitions={'succeeded1':'ended'})
     
-    sm = SMeHealth2012b()
+    sm = SMeHealth2012c()
 
     sis = smach_ros.IntrospectionServer('AUTOMATICA2012', sm, 'AUTOMATICA2012')
     sis.start()
@@ -30,4 +30,3 @@ def main():
     
 if __name__=='__main__':
     main()
-   

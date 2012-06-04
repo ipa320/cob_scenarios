@@ -233,29 +233,29 @@ class deliver_object(smach.State):
 		sss.say(["Here is your " + userdata.object_name + ". Please help yourself."],False)
 		sss.move("torso","nod",False)
 		
-		try:
-			rospy.wait_for_service('/tray/check_occupied',10)
-		except rospy.ROSException, e:
-			print "Service not available: %s"%e
-			return 'failed'
+#		try:
+#			rospy.wait_for_service('/tray/check_occupied',10)
+#		except rospy.ROSException, e:
+#			print "Service not available: %s"%e
+#			return 'failed'
 
-		time = rospy.Time.now().secs
-		loop_rate = rospy.Rate(5) #hz
-		while True:
-			if rospy.Time.now().secs-time > 20:
-				return 'retry'
-			try:
-				tray_service = rospy.ServiceProxy('/tray/check_occupied', CheckOccupied)			
-				req = CheckOccupiedRequest()
-				res = tray_service(req)
-				print "waiting for tray to be not occupied any more"
-				if(res.occupied.data == False):
-					break
-			except rospy.ServiceException, e:
-				print "Service call failed: %s"%e
-				return 'failed'
-			loop_rate.sleep()
-		
+#		time = rospy.Time.now().secs
+#		loop_rate = rospy.Rate(5) #hz
+#		while True:
+#			if rospy.Time.now().secs-time > 20:
+#				return 'retry'
+#			try:
+#				tray_service = rospy.ServiceProxy('/tray/check_occupied', CheckOccupied)			
+#				req = CheckOccupiedRequest()
+#				res = tray_service(req)
+#				print "waiting for tray to be not occupied any more"
+#				if(res.occupied.data == False):
+#					break
+#			except rospy.ServiceException, e:
+#				print "Service call failed: %s"%e
+#				return 'failed'
+#			loop_rate.sleep()
+		sss.wait_for_input()		
 		sss.move("tray","down",False)
 		sss.move("torso","nod",False)
 		

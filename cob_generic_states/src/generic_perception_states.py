@@ -104,14 +104,19 @@ class detect_object(smach.State):
 		else: # this should never happen
 			rospy.logerr("Invalid userdata 'object_name'")
 			self.retries = 0
+			sss.set_light('red')
 			return 'failed'
+
+		sss.set_light('blue')
 	
 		# check if maximum retries reached
 		if self.retries > self.max_retries:
+			sss.set_light('yellow')
 			self.retries = 0
 			handle_torso = sss.move("torso","home",False)
 			handle_torso.wait()
 			handle_arm = sss.move("arm","look_at_table-to-folded")
+			sss.set_light('blue')
 			return 'no_more_retries'
 		
 		# move sdh as feedback
@@ -119,6 +124,7 @@ class detect_object(smach.State):
 		
 		# make the robot ready to inspect the scene
 		if self.retries == 0: # only move arm, sdh and head for the first try
+			sss.set_light('yellow')
 			sss.say(["I will now search for the " + object_name + "."],False)
 			handle_arm = sss.move("arm","folded-to-look_at_table",False)
 			handle_torso = sss.move("torso","shake",False)
@@ -126,6 +132,7 @@ class detect_object(smach.State):
 			handle_arm.wait()
 			handle_head.wait()
 			handle_torso.wait()
+			sss.set_light('blue')
 		handle_torso = sss.move("torso",self.torso_poses[self.retries % len(self.torso_poses)]) # have an other viewing point for each retry
 		
 		# move sdh as feedback
@@ -140,6 +147,7 @@ class detect_object(smach.State):
 		except rospy.ROSException, e:
 			print "Service not available: %s"%e
 			self.retries = 0 # no object found within min_dist start value
+			sss.set_light('red')
 			return 'failed'
 
 		# call object detection service
@@ -151,6 +159,19 @@ class detect_object(smach.State):
 		except rospy.ServiceException, e:
 			print "Service call failed: %s"%e
 			self.retries = 0
+			sss.set_light('red')
+			return 'failed'
+
+		# HACK TODO FIXME call object detection service TWICE TO GET CURRENT IMAGE
+		try:
+			detector_service = rospy.ServiceProxy(self.srv_name_object_detection, DetectObjects)
+			req = DetectObjectsRequest()
+			req.object_name.data = object_name
+			res = detector_service(req)
+		except rospy.ServiceException, e:
+			print "Service call failed: %s"%e
+			self.retries = 0
+			sss.set_light('red')
 			return 'failed'
 			
 		# check for no objects
@@ -180,8 +201,13 @@ class detect_object(smach.State):
 			self.retries += 1
 			return 'no_object'
 
+		# HACK for timestamp
+		obj.pose.header.stamp = rospy.Time.now()
+
 		# we succeeded to detect an object
-		sss.move("torso","home")
 		userdata.object = obj
+		
+		sss.move("torso","home")
+		
 		self.retries = 0
 		return 'succeeded'

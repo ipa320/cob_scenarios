@@ -4,7 +4,8 @@ roslib.load_manifest('cob_generic_states_experimental')   # todo: additional com
 import rospy
 import smach
 import smach_ros
-from SelectObjectFromKeyboard import *
+#from SelectObjectFromKeyboard import *
+from SelectObjectFromTablet import *
 #from generic_basic_states import *
 #from generic_navigation_states import *
 #from generic_perception_states import *
@@ -23,12 +24,16 @@ class KeepMovingUntilObjectSelected(smach.Concurrence):
             self,
             outcomes=['objectSelected','quit'],
             default_outcome='quit',
-            output_keys=['object_name'],
-            outcome_map={'objectSelected':{'SelectObjectFromKeyboard':'objectSelected'},
-                         'quit':{'SelectObjectFromKeyboard':'quit'}})
+            output_keys=['object_name','concurrent_stop'],
+            outcome_map={#'objectSelected':{'SelectObjectFromKeyboard':'objectSelected'},
+                          'objectSelected':{'SelectObjectFromTablet':'objectSelected'},
+                         'quit':{'SelectObjectFromTablet':'quit'}})
+            
         with self:
             smach.Concurrence.add('KeepMoving', KeepMoving())
-            smach.Concurrence.add('SelectObjectFromKeyboard',SelectObjectFromKeyboard(), remapping={'object_name':'object_name'})
+            #smach.Concurrence.add('SelectObjectFromKeyboard',SelectObjectFromKeyboard(), remapping={'object_name':'object_name'})
+            #smach.Concurrence.add('SelectObjectFromTablet',SelectObjectFromTablet(), remapping={'object_name':'object_name','concurrent_stop':'concurrent_stop'})
+            smach.Concurrence.add('SelectObjectFromTablet',SelectObjectFromTablet())
  
 #rospy.init_node('eHealth2012')
 #sm = SM()
