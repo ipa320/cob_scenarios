@@ -1,0 +1,12 @@
+# specify scenario specific parameters here: e.g. objects, tts sentences, ...
+objects:
+  milk1:
+    location: shelf
+    object_id: 31
+  milk2:
+    location: table
+    object_id: 31
+
+sentences:
+  sent_a: ["Hello, my name is Care-O-bot.", "How are you?", "What's your name?"]
+  sent_b: ["Goodbye.", "Have a safe trip home."]

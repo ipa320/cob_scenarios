@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+<launch>
+
+	<!-- define default values for launch files arguments (do not change here, but in scenario.launch) -->
+	<arg name="pc1" />
+	<arg name="pc2" />
+	<arg name="pc3" />
+	<arg name="robot_config" default="$(find cob_default_robot_config)/upload_param.launch"/>
+	<arg name="env_config" default="$(find cob_default_env_config)/upload_param.launch"/>
+	<arg name="map" default="$(find cob_default_env_config)/$(env ROBOT_ENV)/map.yaml"/>
+
+	<!-- upload robot parameters (do not change here, but in scenario.launch) -->
+	<include file="$(arg robot_config)"/>
+
+	<!-- upload environment parameters (do not change here, but in scenario.launch) -->
+	<include file="$(arg env_config)"/>
+
+	<!-- upload scenario parameters -->
+	<include file="$(find cob_hackathon_326)/config/upload_scenario_param.launch"/>
+
+	<!-- start components on pc1 (typically navigation and hardware related components) -->
+	<group>
+		<machine name="pc1" address="$(arg pc1)" default="true"/>
+
+		<!-- ############################################## -->
+		<!-- ### TODO: add your components for pc1 here ### -->
+		<!-- ############################################## -->
+		
+		<!-- start navigation components -->
+		<include file="$(find cob_navigation_global)/launch/2dnav_ros_dwa.launch">
+			<arg name="map" value="$(arg map)"/>
+		</include>
+
+	</group>	
+
+	<!-- start components on pc2 (typically perception components) -->
+	<group>
+		<machine name="pc2" address="$(arg pc2)" default="true"/>
+
+		<!-- ############################################## -->
+		<!-- ### TODO: add your components for pc2 here ### -->
+		<!-- ############################################## -->
+		
+		<!-- start perception components -->
+		<!--include file="$(find cob_datamatrix)/launch/datamatrix.launch" /-->
+		<include file="$(find cob_sensor_fusion)/ros/launch/sensor_fusion_stereo.launch" />
+		<include file="$(find cob_object_detection_fake)/ros/launch/object_detection.launch" />
+		
+	</group>
+
+	<!-- start components on pc3 (typically manipulation components) -->
+	<group>
+		<machine name="pc3" address="$(arg pc3)" default="true"/>
+
+		<!-- ############################################## -->
+		<!-- ### TODO: add your components for pc3 here ### -->
+		<!-- ############################################## -->
+
+		<!-- start manipulation components -->
+		<include file="$(find cob_arm_navigation)/launch/cob_arm_navigation_static.launch" />
+		
+	</group>
+
+	<!-- set default pc back to pc1 -->
+	<machine name="pc1" address="$(arg pc1)" default="true"/>
+
+</launch>

@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<launch>
+
+	<!-- upload ROBOT_ENV parameters to parameter server -->
+	
+	<!-- ############################################# -->
+	<!-- ### TODO: add your env configuration here ### -->
+	<!-- ###       see cob_default_env_config      ### -->
+	<!-- ############################################# -->
+	<rosparam command="load" ns="/script_server/base" file="$(find cob_hackathon_326)/config/envs/$(env ROBOT_ENV)/navigation_goals.yaml"/>
+	
+</launch>

@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<launch>
+
+	<include file="$(find cob_scenario_example)/launch/scenario.xml" >
+	
+		<!-- define location for robot parameters: uncomment if you are not using parameters from cob_default_robot_config -->
+		<arg name="robot_config" value="$(find cob_scenario_example)/config/robots/upload_robot_param.launch" />
+
+	</include>
+
+</launch>

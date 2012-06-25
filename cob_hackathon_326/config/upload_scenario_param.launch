@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<launch>
+
+	<!-- upload scenario parameters to parameter server -->
+	
+	<!-- ################################################## -->
+	<!-- ### TODO: add your scenario configuration here ### -->
+	<!-- ################################################## -->
+	<rosparam command="load" ns="/scenario" file="$(find cob_hackathon_326)/config/common/scenario_params.yaml"/>
+
+</launch>
