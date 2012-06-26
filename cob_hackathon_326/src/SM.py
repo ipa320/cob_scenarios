@@ -17,25 +17,27 @@ class SM(smach.StateMachine):
             
             self.userdata.base_pose = "home2"
             
-#            smach.StateMachine.add('CHANGE_FLOOR',ChangeFloor(),
-#                                   transitions={'changed':'WONDER_AROUND',
-#                                                'not_changed':'ended',
-#                                                'failed':'failed'})
-            self.sm_con = smach.Concurrence(outcomes=['finished','failed'],
-                                            default_outcome='finished',
-                                            outcome_map={'finished':
-                                                {'FETCH_OBJECT':'fetched',
-                                                 'WONDER_AROUND':'finished'}},
-                                            input_keys=['base_pose'])
-                                         
-            with self.sm_con:
-                # Add states to the container
-                smach.Concurrence.add('FETCH_OBJECT', FetchObject())
-                smach.Concurrence.add('WONDER_AROUND', WonderAround())
-                                         
-            smach.StateMachine.add('CONCURRENT',self.sm_con,
-                                   transitions={'finished':'ended',
+            smach.StateMachine.add('CHANGE_FLOOR',ChangeFloor(),
+                                   transitions={'changed':'WONDER_AROUND',
+                                                'not_changed':'ended',
                                                 'failed':'failed'})
+
+
+#            self.sm_con = smach.Concurrence(outcomes=['finished','failed'],
+#                                            default_outcome='finished',
+#                                            outcome_map={'finished':
+#                                                {'FETCH_OBJECT':'fetched',
+#                                                 'WONDER_AROUND':'finished'}},
+#                                            input_keys=['base_pose'])
+                                         
+#            with self.sm_con:
+#                # Add states to the container
+#                smach.Concurrence.add('FETCH_OBJECT', FetchObject())
+#                smach.Concurrence.add('WONDER_AROUND', WonderAround())
+                                         
+#            smach.StateMachine.add('CONCURRENT',self.sm_con,
+#                                   transitions={'finished':'ended',
+#                                                'failed':'failed'})
             
 #            smach.StateMachine.add('WONDER_AROUND',WonderAround(),
 #                                   transitions={'finished':'ended',
