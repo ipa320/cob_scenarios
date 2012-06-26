@@ -43,8 +43,8 @@
 		
 		<!-- start perception components -->
 		<!--include file="$(find cob_datamatrix)/launch/datamatrix.launch" /-->
-		<include file="$(find cob_sensor_fusion)/ros/launch/sensor_fusion_stereo.launch" />
-		<include file="$(find cob_object_detection_fake)/ros/launch/object_detection.launch" />
+		<!--include file="$(find cob_sensor_fusion)/ros/launch/sensor_fusion_stereo.launch" /-->
+		<!--include file="$(find cob_object_detection_fake)/ros/launch/object_detection.launch" /-->
 		
 	</group>
 
@@ -57,7 +57,7 @@
 		<!-- ############################################## -->
 
 		<!-- start manipulation components -->
-		<include file="$(find cob_arm_navigation)/launch/cob_arm_navigation_static.launch" />
+		<!--include file="$(find cob_arm_navigation)/launch/cob_arm_navigation_static.launch" /-->
 		
 	</group>
 

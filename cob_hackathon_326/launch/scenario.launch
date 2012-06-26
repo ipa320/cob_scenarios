@@ -20,10 +20,10 @@
 		<!--arg name="robot_config" value="$(find cob_scenario_example)/config/robots/upload_robot_param.launch"/-->
 
 		<!-- define location for env parameters: uncomment if you are not using parameters from cob_default_env_config -->
-		<!--arg name="env_config" value="$(find cob_scenario_example)/config/envs/upload_env_param.launch"/-->
+		<arg name="env_config" value="$(find cob_hackathon_326)/config/envs/upload_env_param.launch"/>
 
 		<!-- define location for map: uncomment if you are not using a map from cob_default_env_config -->
-		<!--arg name="map" value="$(find cob_scenario_example)/config/envs/$(env ROBOT_ENV)/map.yaml"/-->
+		<arg name="map" value="$(find cob_hackathon_326)/config/envs/$(env ROBOT_ENV)/map.yaml"/>
 
 	</include>
 
