@@ -7,6 +7,6 @@
 	<!-- ### TODO: add your robot configuration here ### -->
 	<!-- ###       see cob_default_robot_config      ### -->
 	<!-- ############################################### -->
-	<rosparam command="load" ns="/script_server/arm" file="$(find cob_scenario_example)/config/robots/$(env ROBOT)/arm_joint_configurations.yaml"/>
+	<rosparam command="load" ns="/script_server/sdh" file="$(find cob_hackathon_326)/config/robots/$(env ROBOT)/sdh_joint_configurations.yaml"/>
 
 </launch>

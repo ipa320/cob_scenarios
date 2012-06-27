@@ -30,6 +30,7 @@
 		<include file="$(find cob_navigation_global)/launch/2dnav_ros_dwa.launch">
 			<arg name="map" value="$(arg map)"/>
 		</include>
+		<include file="$(find cob_tactiletools)/launch/filters.launch"/>
 
 	</group>	
 
@@ -57,7 +58,7 @@
 		<!-- ############################################## -->
 
 		<!-- start manipulation components -->
-		<!--include file="$(find cob_arm_navigation)/launch/cob_arm_navigation_static.launch" /-->
+		<include file="$(find cob_arm_navigation)/launch/cob_arm_navigation_static.launch" />
 		
 	</group>
 
