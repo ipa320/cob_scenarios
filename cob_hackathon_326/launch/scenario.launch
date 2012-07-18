@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<launch>
+
+	<!-- define default values for launch files arguments (do not change here, but in scenario_robot.launch) -->
+	<arg name="pc1" default="localhost"/>
+	<arg name="pc2" default="localhost"/>
+	<arg name="pc3" default="localhost"/>
+
+	<include file="$(find cob_hackathon_326)/launch/scenario.xml" >
+		<arg name="pc1" value="$(arg pc1)"/>
+		<arg name="pc2" value="$(arg pc2)"/>
+		<arg name="pc3" value="$(arg pc3)"/>
+
+		<!-- ################################################################ -->
+		<!-- ### TODO: uncomment the following lines if your are not      ### -->
+		<!-- ###       using default robot or default env config packages ### -->
+		<!-- ################################################################ -->
+
+		<!-- define location for robot parameters: uncomment if you are not using parameters from cob_default_robot_config -->
+		<arg name="robot_config" value="$(find cob_hackathon_326)/config/robots/upload_robot_param.launch"/>
+
+		<!-- define location for env parameters: uncomment if you are not using parameters from cob_default_env_config -->
+		<arg name="env_config" value="$(find cob_hackathon_326)/config/envs/upload_env_param.launch"/>
+
+		<!-- define location for map: uncomment if you are not using a map from cob_default_env_config -->
+		<arg name="map" value="$(find cob_hackathon_326)/config/envs/$(env ROBOT_ENV)/map.yaml"/>
+
+	</include>
+
+</launch>

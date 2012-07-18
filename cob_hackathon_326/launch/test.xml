@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<launch>
+
+	<!-- define default values for launch files arguments (do not change here, but in scenario.launch) -->
+	<arg name="robot_config" default="$(find cob_default_robot_config)/upload_param.launch"/>
+
+	<!-- upload robot parameters (do not change here, but in scenario.launch) -->
+	<include file="$(arg robot_config)"/>
+
+</launch>

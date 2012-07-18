@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<launch>
+
+	<!-- upload ROBOT parameters to parameter server -->
+	
+	<!-- ############################################### -->
+	<!-- ### TODO: add your robot configuration here ### -->
+	<!-- ###       see cob_default_robot_config      ### -->
+	<!-- ############################################### -->
+	<rosparam command="load" ns="/script_server/sdh" file="$(find cob_hackathon_326)/config/robots/$(env ROBOT)/sdh_joint_configurations.yaml"/>
+
+</launch>

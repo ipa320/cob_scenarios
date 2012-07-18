@@ -1,0 +1,5 @@
+#[x,y,theta]
+elevator_button: [-9.436, -6.969, 2.360]
+elevator_out: [-9.854, -6.589, 2.360]
+elevator_in_left: [-7.096, -8.120, -0.831]
+elevator_in_right: [-8.718, -8.931, 2.394]

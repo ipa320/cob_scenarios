@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<launch>
+
+	<!-- start bringup_sim -->
+	<include file="$(find cob_bringup_sim)/launch/robot.launch" />
+
+	<!-- define default values for launch files arguments (do not change here, if using simulation on localhost, use scenario.launch directly) -->
+	<include file="$(find cob_hackathon_326)/launch/scenario.launch" />
+
+</launch>

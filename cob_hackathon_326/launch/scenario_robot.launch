@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<launch>
+
+	<!-- start bringup -->
+	<!--include file="$(find cob_bringup)/robot.launch" /-->
+
+	<!-- define default values for launch files arguments (do not change here, if using simulation on localhost, use scenario.launch directly) -->
+	<include file="$(find cob_hackathon_326)/launch/scenario.launch" >
+		<arg name="pc1" value="$(env ROBOT)-pc1"/>
+		<arg name="pc2" value="$(env ROBOT)-pc2"/>
+		<arg name="pc3" value="$(env ROBOT)-pc3"/>
+	</include>
+
+</launch>

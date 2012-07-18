@@ -1,0 +1,15 @@
+<package>
+  <description brief="cob_hackathon_326">
+
+     cob_hackathon_326
+
+  </description>
+  <author>fmw</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/cob_hackathon_326</url>
+  <depend package="cob_generic_states_experimental"/>
+
+</package>
+
+

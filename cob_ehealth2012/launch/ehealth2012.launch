@@ -9,32 +9,36 @@
 	<include file="$(find cob_manipulator)/ros/launch/kdl_solver.launch"/>
 	
 	<include file="$(find cob_tray_sensors)/ros/launch/tray_sensors.launch"/>
+	<include file="$(find cob_tactiletools)/launch/filters.launch"/>
 
 	<!-- upload default parameters -->
 	<include file="$(find cob_default_robot_config)/upload_param.launch"/>
-	<include file="$(find cob_default_env_config)/upload_param.launch"/>
+	<!-- include file="$(find cob_default_env_config)/upload_param.launch"/-->
 	
-	<!-- upload cob_experimentation_days parameters -->
-	<!-- <include file="$(find cob_experimentation_days)/config/upload_param.launch"/> -->
-	<!-- <include file="$(find cob_experimentation_days)/config/upload_param.launch"/> -->
-	<!-- send ROBOT parameters to parameter server -->
-    <rosparam command="load" ns="/script_server/base" file="$(find cob_ehealth2012)/config/$(env ROBOT_ENV)/navigation_goals.yaml"/>
-	<!--rosparam command="load" ns="/script_server/arm" file="$(find cob_ehealth2012)/config/$(env ROBOT)/arm_joint_configurations.yaml"/-->
-
-
+	<!-- upload scenario parameters -->
+	<include file="$(find cob_ehealth2012)/config/upload_param.launch"/>
 	
 	<!-- start navigation -->
-    <include file="$(find cob_navigation_global)/launch/2dnav_ros_dwa.launch"/> 
+    <include file="$(find cob_navigation_global)/launch/2dnav_ros_dwa.launch">
+		<arg name="map" value="$(find cob_ehealth2012)/config/$(env ROBOT_ENV)/map.yaml"/>
+    </include> 
     <include file="$(find cob_navigation_global)/launch/2dnav_linear.xml"/>
-       
+
 	<group>
-		<machine name="pc3" address="$(arg pc3)" default="true"/>
+		<machine name="pc2" address="$(arg pc2)" default="true"/>
 		
+		<!-- start perception -->
 		<include file="$(find cob_sensor_fusion)/ros/launch/sensor_fusion_stereo.launch" />
 		<include file="$(find cob_object_detection)/ros/launch/object_detection.launch" />
 	</group>
 
-	<machine name="pc1" address="$(arg pc1)" default="true"/>
+	<group>
+		<machine name="pc3" address="$(arg pc3)" default="true"/>
 
+		<!-- start manipulation -->
+		<include file="$(find cob_arm_navigation)/launch/cob_arm_navigation_static.launch" />
+	</group>
+
+	<machine name="pc1" address="$(arg pc1)" default="true"/>
 
 </launch>
