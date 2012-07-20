@@ -4,18 +4,16 @@
   <license>BSD,LGPL</license>  
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/cob_scenarios</url>
-  <depend stack="arm_navigation" /> <!-- kinematics_msgs -->
   <depend stack="cob_command_tools" /> <!-- cob_command_gui, cob_dashboard, cob_script_server -->
   <depend stack="cob_driver" /> <!-- cob_tray_sensors -->
   <depend stack="cob_environments" /> <!-- cob_default_env_config -->
-  <depend stack="cob_manipulation" /> <!-- cob_mmcontroller, cob_manipulator -->
+  <depend stack="cob_manipulation" /> <!-- cob_manipulator -->
   <depend stack="cob_navigation" /> <!-- cob_navigation_global -->
-  <depend stack="cob_object_perception" /> <!-- cob_object_detection_msgs, cob_object_detection_fake -->
+  <depend stack="cob_object_perception" /> <!-- cob_object_detection_fake -->
   <depend stack="cob_robots" /> <!-- cob_bringup, cob_default_robot_config -->
+  <depend stack="cob_scenario_states" /> <!-- cob_generic_states, cob_generic_states_experimental -->
   <depend stack="cob_simulation" /> <!-- cob_bringup_sim -->
-  <depend stack="common_msgs" /> <!-- actionlib_msgs -->
-  <depend stack="executive_smach" /> <!-- smach_ros, smach -->
-  <depend stack="geometry" /> <!-- tf -->
+  <depend stack="executive_smach" /> <!-- smach -->
   <depend stack="ros" />
   <depend stack="ros_comm" /> <!-- rospy -->
 
